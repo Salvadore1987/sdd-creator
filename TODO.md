@@ -6,19 +6,19 @@
 
 ---
 
-## Phase 1 — Project Setup
+## Phase 1 — Project Setup ✅
 
-- [ ] `npm init` + `git init`, добавить `.gitignore` (node_modules, dist, .env, .sdd/cache)
-- [ ] `package.json`: deps — `commander`, `inquirer`, `@anthropic-ai/sdk`, `handlebars`, `winston`, `zod`, `uuid` (v7), `chalk`, `ora`
-- [ ] dev-deps — `typescript`, `ts-node`, `jest`, `ts-jest`, `@types/*`, `eslint`, `@typescript-eslint/*`, `prettier`
-- [ ] `tsconfig.json` (strict mode, `target: ES2022`, `moduleResolution: node16`)
-- [ ] `jest.config.js` (ts-jest preset, projects: unit / integration / e2e)
-- [ ] `.eslintrc.json` + `.prettierrc.json`
-- [ ] npm scripts: `dev`, `build`, `start`, `test`, `test:unit`, `test:integration`, `test:e2e`, `test:coverage`, `test:watch`, `lint`, `lint:fix`, `format`, `type-check`
-- [ ] `bin` в `package.json` → `dist/cli.js`; добавить shebang `#!/usr/bin/env node` в `cli.ts`
-- [ ] Создать каркас директорий: `src/{commands,application,domain,adapters,ports,utils,templates,types}`, `src/templates/{stacks,architectures,integrations,base}`, `tests/{unit,integration,e2e,fixtures}`
-- [ ] `.env.example` с обоими провайдерами (см. Environment Setup в SDD_CREATOR.md)
-- [ ] CI baseline: GitHub Actions для lint + type-check + test на PR
+- ✅ `npm init` + `git init`, добавить `.gitignore` (node_modules, dist, .env, .sdd/cache)
+- ✅ `package.json`: deps — `commander`, `inquirer`, `@anthropic-ai/sdk`, `handlebars`, `winston`, `zod`, `uuid` (v7), `chalk`, `ora`
+- ✅ dev-deps — `typescript`, `ts-node`, `jest`, `ts-jest`, `@types/*`, `eslint`, `@typescript-eslint/*`, `prettier`
+- ✅ `tsconfig.json` (strict mode, `target: ES2022`, `moduleResolution: node16`)
+- ✅ `jest.config.js` (ts-jest preset, projects: unit / integration / e2e)
+- ✅ `.eslintrc.json` + `.prettierrc.json`
+- ✅ npm scripts: `dev`, `build`, `start`, `test`, `test:unit`, `test:integration`, `test:e2e`, `test:coverage`, `test:watch`, `lint`, `lint:fix`, `format`, `type-check`
+- ✅ `bin` в `package.json` → `dist/cli.js`; добавить shebang `#!/usr/bin/env node` в `cli.ts`
+- ✅ Создать каркас директорий: `src/{commands,application,domain,adapters,ports,utils,templates,types}`, `src/templates/{stacks,architectures,integrations,base}`, `tests/{unit,integration,e2e,fixtures}`
+- ✅ `.env.example` с обоими провайдерами (см. Environment Setup в SDD_CREATOR.md)
+- ✅ CI baseline: GitHub Actions для lint + type-check + test на PR
 
 ---
 
