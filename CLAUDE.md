@@ -45,3 +45,4 @@ None of the npm scripts referenced in `SDD_CREATOR.md` (`npm run dev`, `test`, `
 ## Implementation
 - After each phase need check checkbox to done
 - Create commit whith message `git commit -am {generated message from tasks}`
+- After each phase need to update README.md if needed

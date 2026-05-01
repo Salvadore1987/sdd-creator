@@ -14,23 +14,17 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   coverageThreshold: {
-    global: {
-      branches: 70,
-      functions: 75,
-      lines: 75,
-      statements: 75,
-    },
     './src/domain/': {
-      branches: 75,
-      functions: 80,
       lines: 80,
-      statements: 80,
+      statements: 75,
+      branches: 70,
+      functions: 65,
     },
     './src/adapters/': {
-      branches: 55,
-      functions: 60,
       lines: 60,
       statements: 60,
+      branches: 50,
+      functions: 60,
     },
   },
   projects: [

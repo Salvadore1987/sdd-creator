@@ -22,55 +22,55 @@
 
 ---
 
-## Phase 2 — Domain & Adapters (foundation)
+## Phase 2 — Domain & Adapters (foundation) ✅
 
-### 2.1 Types & Domain Models
+### 2.1 Types & Domain Models ✅
 
-- [ ] `src/types/index.ts` — re-export всего публичного API
-- [ ] `src/domain/models.ts` — типы: `ProjectConfig`, `Requirement`, `AcceptanceCriterion`, `Risk`, `NFR`, `ADR`, `Stakeholder`, `GlossaryTerm`, `Integration`, `Stack`, `Architecture`, `IntegrationCategory`
-- [ ] `schemaVersion: number` во всех корневых документах (config / requirements / integrations)
-- [ ] Stable ID-генератор: `FR-001`, `NFR-001`, `ADR-001`, `RISK-001`, `INT-001`, `AC-<FR>-N` (увеличиваемые, без gap'ов)
-- [ ] UUIDv7 для технических ID (cache, file refs); stable IDs выше — для пользовательских
+- ✅ `src/types/index.ts` — re-export всего публичного API
+- ✅ `src/domain/models.ts` — типы: `ProjectConfig`, `Requirement`, `AcceptanceCriterion`, `Risk`, `NFR`, `ADR`, `Stakeholder`, `GlossaryTerm`, `Integration`, `Stack`, `Architecture`, `IntegrationCategory`
+- ✅ `schemaVersion: number` во всех корневых документах (config / requirements / integrations)
+- ✅ Stable ID-генератор: `FR-001`, `NFR-001`, `ADR-001`, `RISK-001`, `INT-001`, `AC-<FR>-N` (увеличиваемые, без gap'ов)
+- ✅ UUIDv7 для технических ID (cache, file refs); stable IDs выше — для пользовательских
 
-### 2.2 Ports
+### 2.2 Ports ✅
 
-- [ ] `src/ports/IFileRepository.ts` — `read/write/exists/mkdir/remove/list`, типизированные ошибки (`FileNotFoundError`, `PermissionError`)
-- [ ] `src/ports/IClaudeProvider.ts` — `complete(prompt, opts): Promise<string>`, `completeJson<T>(prompt, schema, opts): Promise<T>`, `countTokens?`
-- [ ] `src/ports/ILogger.ts` — `debug/info/warn/error`, structured fields
-- [ ] `src/ports/IIntegrationImporter.ts` — `canImport(format)`, `import(file): Promise<Integration[]>`
-- [ ] `src/ports/ITemplateEngine.ts` — `render(template, ctx): string`, `registerHelper`, `registerPartial`
+- ✅ `src/ports/IFileRepository.ts` — `read/write/exists/mkdir/remove/list`, типизированные ошибки (`FileNotFoundError`, `PermissionError`)
+- ✅ `src/ports/IClaudeProvider.ts` — `complete(prompt, opts): Promise<string>`, `completeJson<T>(prompt, schema, opts): Promise<T>`, `countTokens?`
+- ✅ `src/ports/ILogger.ts` — `debug/info/warn/error`, structured fields
+- ✅ `src/ports/IIntegrationImporter.ts` — `canImport(format)`, `import(file): Promise<Integration[]>`
+- ✅ `src/ports/ITemplateEngine.ts` — `render(template, ctx): string`, `registerHelper`, `registerPartial`
 
-### 2.3 Adapters
+### 2.3 Adapters ✅
 
-- [ ] `src/adapters/FileRepository.ts` — `fs/promises`, обработка ENOENT → `FileNotFoundError`
-- [ ] `src/adapters/ClaudeApiAdapter.ts` — `@anthropic-ai/sdk`, retry с экспонентой на 429 (читать `Retry-After`), bounded retry на 5xx
-- [ ] `src/adapters/ClaudeCliAdapter.ts` — `child_process.execFile('claude', ['-p', prompt, '--output-format', 'json'])`, без shell, таймаут (`SDD_CLAUDE_CLI_TIMEOUT_MS`, default 120s), парсинг JSON stdout
-- [ ] `ClaudeCliNotInstalledError` (бинарника нет в PATH / `SDD_CLAUDE_CLI_BIN`) — сообщение: `npm i -g @anthropic-ai/claude-code`
-- [ ] `ClaudeCliAuthError` (нужна авторизация) — сообщение: `claude login`
-- [ ] `src/adapters/ClaudeProviderFactory.ts` — выбор по `config.claude.provider` (override: `--provider` flag → env `SDD_CLAUDE_PROVIDER` → config → default `cli`)
-- [ ] Кэш-обёртка `CachingClaudeProvider` (decorator) — ключ `hash(model + prompt + opts)`, on-disk в `.sdd/cache/`, TTL опционально
-- [ ] `src/adapters/HandlebarsTemplateEngine.ts` — компиляция + кэш скомпилированных шаблонов
-- [ ] Custom helpers: `eq`, `ne`, `join`, `formatDate`, `lower`, `upper`, `markdownTable`, `mermaidEscape`
-- [ ] `src/adapters/WinstonLogger.ts` — JSON формат, redaction для prompt-полей и API-ключей
-- [ ] `src/adapters/importers/OpenApiImporter.ts`, `AsyncApiImporter.ts`, `BpmnImporter.ts` (импорт интеграций)
+- ✅ `src/adapters/FileRepository.ts` — `fs/promises`, обработка ENOENT → `FileNotFoundError`
+- ✅ `src/adapters/ClaudeApiAdapter.ts` — `@anthropic-ai/sdk`, retry с экспонентой на 429 (читать `Retry-After`), bounded retry на 5xx
+- ✅ `src/adapters/ClaudeCliAdapter.ts` — `child_process.execFile('claude', ['-p', prompt, '--output-format', 'json'])`, без shell, таймаут (`SDD_CLAUDE_CLI_TIMEOUT_MS`, default 120s), парсинг JSON stdout
+- ✅ `ClaudeCliNotInstalledError` (бинарника нет в PATH / `SDD_CLAUDE_CLI_BIN`) — сообщение: `npm i -g @anthropic-ai/claude-code`
+- ✅ `ClaudeCliAuthError` (нужна авторизация) — сообщение: `claude login`
+- ✅ `src/adapters/ClaudeProviderFactory.ts` — выбор по `config.claude.provider` (override: `--provider` flag → env `SDD_CLAUDE_PROVIDER` → config → default `cli`)
+- ✅ Кэш-обёртка `CachingClaudeProvider` (decorator) — ключ `hash(model + prompt + opts)`, on-disk в `.sdd/cache/`, TTL опционально
+- ✅ `src/adapters/HandlebarsTemplateEngine.ts` — компиляция + кэш скомпилированных шаблонов
+- ✅ Custom helpers: `eq`, `ne`, `join`, `formatDate`, `lower`, `upper`, `markdownTable`, `mermaidEscape`
+- ✅ `src/adapters/WinstonLogger.ts` — JSON формат, redaction для prompt-полей и API-ключей
+- ✅ `src/adapters/importers/OpenApiImporter.ts`, `AsyncApiImporter.ts`, `BpmnImporter.ts` (stub'ы; реализация — Phase 4.5.3)
 
-### 2.4 Domain Services
+### 2.4 Domain Services ✅
 
-- [ ] `src/domain/ConfigManager.ts` — load/save `.sdd/config.json`, валидация Zod
-- [ ] `src/domain/RequirementValidator.ts` — Zod-схемы per-topic, проверка стабильных ID, ссылочной целостности
-- [ ] `src/domain/IntegrationCatalog.ts` — CRUD над `integrations[]`, генерация `INT-NNN`, валидация per-category схем
-- [ ] `src/domain/PromptBuilder.ts` — собирает контекст (config + already-collected sections) и тело prompt'а из шаблона
-- [ ] `src/domain/StatusTracker.ts` — `completed | skipped | stale`; логика `stale` (что-то изменилось → зависимая секция помечается)
-- [ ] `src/domain/CompletenessLinter.ts` — правила (FR без AC, NFR без measurable target, нерезолвлящиеся ID, mermaid parse, glossary coverage)
-- [ ] `src/utils/validators.ts` — Zod-схемы (re-export); `src/utils/constants.ts` (env keys, defaults), `src/utils/config.ts` (env + .env loader)
+- ✅ `src/domain/ConfigManager.ts` — load/save `.sdd/config.json`, валидация Zod
+- ✅ `src/domain/RequirementValidator.ts` — Zod-схемы per-topic, проверка стабильных ID, ссылочной целостности
+- ✅ `src/domain/IntegrationCatalog.ts` — CRUD над `integrations[]`, генерация `INT-NNN`, валидация per-category схем
+- ✅ `src/domain/PromptBuilder.ts` — собирает контекст (config + already-collected sections) и тело prompt'а из шаблона
+- ✅ `src/domain/StatusTracker.ts` — `completed | skipped | stale`; логика `stale` (что-то изменилось → зависимая секция помечается)
+- ✅ `src/domain/CompletenessLinter.ts` — правила (FR без AC, NFR без measurable target, нерезолвлящиеся ID, mermaid parse, glossary coverage)
+- ✅ `src/utils/validators.ts` — Zod-схемы (re-export); `src/utils/constants.ts` (env keys, defaults), `src/utils/config.ts` (env + .env loader)
 
-### 2.5 Tests for Phase 2
+### 2.5 Tests for Phase 2 ✅
 
-- [ ] `tests/unit/ConfigManager.test.ts`, `RequirementValidator.test.ts`, `IntegrationCatalog.test.ts`, `PromptBuilder.test.ts`, `StatusTracker.test.ts`, `CompletenessLinter.test.ts`
-- [ ] `tests/integration/FileRepository.test.ts` (через tmpdir)
-- [ ] `tests/unit/ClaudeApiAdapter.test.ts` (mock SDK), `ClaudeCliAdapter.test.ts` (mock `execFile` + fixture stdout)
-- [ ] `tests/unit/ClaudeProviderFactory.test.ts` (precedence flag>env>config>default)
-- [ ] Coverage target: domain ≥ 80%, adapters ≥ 60%
+- ✅ `tests/unit/ConfigManager.test.ts`, `RequirementValidator.test.ts`, `IntegrationCatalog.test.ts`, `PromptBuilder.test.ts`, `StatusTracker.test.ts`, `CompletenessLinter.test.ts`
+- ✅ `tests/integration/FileRepository.test.ts` (через tmpdir)
+- ✅ `tests/unit/ClaudeApiAdapter.test.ts` (mock SDK), `ClaudeCliAdapter.test.ts` (mock `execFile` + fixture stdout)
+- ✅ `tests/unit/ClaudeProviderFactory.test.ts` (precedence flag>env>config>default)
+- ✅ Coverage target: domain lines 80% (gate enforced), adapters lines 60% (gate enforced)
 
 ---
 
