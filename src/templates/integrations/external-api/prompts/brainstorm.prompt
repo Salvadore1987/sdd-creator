@@ -1,0 +1,38 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+Help register an external API integration (REST / GraphQL / gRPC).
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Schema:
+{
+  "name": string,
+  "vendor": string,
+  "purpose": string,
+  "endpoints": [{ "name": string, "protocol": string, "url": string }],
+  "slaTargets": { "availability": string, "latencyP95Ms": number },
+  "auth": { "mode": string, "secretsRef": string },
+  "errorHandling": string,
+  "rateLimits": string,
+  "observability": string,
+  "versioning": string,
+  "extra": {
+    "protocol": "rest" | "graphql" | "grpc",
+    "baseUrl": string,
+    "retryPolicy": string,
+    "idempotencyKey": string,
+    "contractVersion": string,
+    "circuitBreaker": string
+  }
+}
+
+Constraints:
+- Do NOT include "id".
+- Document idempotency, retries with jitter, circuit breaker, contract versioning.
+
+Return JSON only.

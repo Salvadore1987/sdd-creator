@@ -1,0 +1,13 @@
+# Integrations Catalog
+
+> Project: {{config.metadata.name}} | Generated: {{generatedAt}}
+
+This document enumerates every external system the project depends on. Each entry follows
+the same structure: purpose, endpoints, SLA targets, auth, error handling, observability.
+
+| ID | Category | Name | Purpose |
+| --- | --- | --- | --- |
+{{#each integrations}}
+| {{this.id}} | {{this.category}} | {{this.name}} | {{this.purpose}} |
+{{/each}}
+

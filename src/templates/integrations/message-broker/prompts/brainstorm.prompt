@@ -1,0 +1,42 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+Help register a message broker integration (Kafka, RabbitMQ, NATS, ActiveMQ, SQS/SNS, Pub/Sub).
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Schema:
+{
+  "name": string,
+  "vendor": string,
+  "purpose": string,
+  "endpoints": [{ "name": string, "protocol": string, "url": string }],
+  "slaTargets": { "availability": string, "latencyP95Ms": number },
+  "auth": { "mode": string, "secretsRef": string },
+  "errorHandling": string,
+  "rateLimits": string,
+  "observability": string,
+  "versioning": string,
+  "extra": {
+    "flavor": "kafka" | "rabbitmq" | "nats" | "activemq" | "sqs" | "pubsub" | string,
+    "topics": string[],
+    "exchanges": string[],
+    "partitioning": string,
+    "ordering": string,
+    "delivery": "at-most-once" | "at-least-once" | "exactly-once",
+    "deadLetter": string,
+    "retentionPolicy": string,
+    "consumerGroups": string[],
+    "backpressure": string
+  }
+}
+
+Constraints:
+- Do NOT include "id" — INT-NNN is assigned by the tool.
+- Specify delivery semantics, partitioning/ordering, and DLQ policy explicitly.
+
+Return JSON only.

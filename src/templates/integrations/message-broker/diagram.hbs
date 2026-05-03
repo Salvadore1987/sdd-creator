@@ -1,0 +1,12 @@
+```mermaid
+flowchart LR
+    producer[Producer]
+    broker[{{integration.name}}]
+    producer --> broker
+{{#each integration.extra.topics}}
+    broker --> t_{{@index}}["topic: {{this}}"]
+{{/each}}
+{{#each integration.extra.consumerGroups}}
+    t_0 --> c_{{@index}}["group: {{this}}"]
+{{/each}}
+```

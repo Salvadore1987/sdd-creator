@@ -1,0 +1,10 @@
+## Traceability
+
+| Integration | Used by features |
+| --- | --- |
+{{#each integrations}}
+| {{this.id}} ({{this.name}}) | {{lookup ../usage this.id}} |
+{{/each}}
+
+> Features marked above must keep `usesIntegrations` in sync with this catalog.
+

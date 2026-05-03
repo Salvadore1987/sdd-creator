@@ -119,44 +119,45 @@
 
 ---
 
-## Phase 4.5 — `integrations` Command (отдельный жизненный цикл)
+## Phase 4.5 — `integrations` Command (отдельный жизненный цикл) ✅
 
-### 4.5.1 Service & commands
+### 4.5.1 Service & commands ✅
 
-- [ ] `src/application/IntegrationsService.ts` — `add`, `list`, `show`, `edit`, `remove`, `validate`, `import`, `generateSpec`
-- [ ] `src/commands/integrations.command.ts` — Commander sub-commands (`integrations add | list | show <id> | edit <id> | remove <id> | validate | spec | import --from <fmt> <file>`)
-- [ ] Хранение: отдельный артефакт `.sdd/integrations.json` (`schemaVersion`, `integrations: []`)
+- ✅ `src/application/IntegrationsService.ts` — `add`, `list`, `show`, `edit`, `remove`, `validate`, `import`, `generateSpec`
+- ✅ `src/commands/integrations.command.ts` — Commander sub-commands (`list | show <id> | add | edit <id> | remove <id> | validate | spec | import --from <fmt> --file <path>`)
+- ✅ Хранение: отдельный артефакт `.sdd/integrations.json` (`schemaVersion`, `integrations: []`)
 
-### 4.5.2 Per-category presets
+### 4.5.2 Per-category presets ✅
 
-Для каждой создать `src/templates/integrations/<category>/{prompts/brainstorm.prompt, schema.json, section.hbs, diagram.hbs?}`:
+Для каждой создан `src/templates/integrations/<category>/prompts/brainstorm.prompt` (+ `diagram.hbs` для bpms/message-broker/database). Per-category Zod-схемы для `extra` живут в `src/domain/IntegrationCategoryRegistry.ts`.
 
-- [ ] `bpms` (Camunda 7/8 Zeebe, Flowable, Temporal, Conductor) — BPMN diagram, processes, job workers, correlation keys, sagas, retention, versioning
-- [ ] `message-broker` (RabbitMQ, Kafka, NATS, ActiveMQ, SQS/SNS, Pub/Sub) — exchanges/topics, partitioning, ordering, at-least-once vs exactly-once, DLQ, retention, consumer groups, backpressure, topology diagram
-- [ ] `database` (PostgreSQL, MySQL, MongoDB, Cassandra, ClickHouse) — read/write split, replication, migrations (Flyway/Liquibase), connection pooling, sharding, ER-выдержки
-- [ ] `cache` (Redis, Memcached, Hazelcast)
-- [ ] `search` (Elasticsearch, OpenSearch, Meilisearch)
-- [ ] `identity` (Keycloak, Auth0, Okta, Cognito) — realms/clients, scopes, token lifetime, refresh, federation
-- [ ] `storage` (S3, MinIO, GCS, Azure Blob)
-- [ ] `observability` (Prometheus, Grafana, Loki, Jaeger, Datadog)
-- [ ] `payment` (Stripe, PayPal, YooKassa)
-- [ ] `notification` (Twilio, SendGrid, FCM, APNs)
-- [ ] `external-api` (REST/GraphQL/gRPC) — rate limits, retry, idempotency, contract versioning, circuit breaker
-- [ ] `legacy` (SOAP / mainframe)
-- [ ] `custom`
-- [ ] `_base/{overview.hbs, cross-cutting.hbs, traceability.hbs}` — общие секции
+- ✅ `bpms` (Camunda 7/8 Zeebe, Flowable, Temporal, Conductor) — diagram + extras (processes, jobWorkers, correlationKeys, sagas, retention, versioning, bpmnFile)
+- ✅ `message-broker` (RabbitMQ, Kafka, NATS, ActiveMQ, SQS/SNS, Pub/Sub) — diagram + extras (topics/exchanges, partitioning, ordering, delivery, deadLetter, retention, consumerGroups, backpressure)
+- ✅ `database` (PostgreSQL, MySQL, MongoDB, Cassandra, ClickHouse) — diagram + extras (engine, readWriteSplit, replication, migrations, pooling, sharding, schemaSnippet)
+- ✅ `cache` (Redis, Memcached, Hazelcast)
+- ✅ `search` (Elasticsearch, OpenSearch, Meilisearch)
+- ✅ `identity` (Keycloak, Auth0, Okta, Cognito)
+- ✅ `storage` (S3, MinIO, GCS, Azure Blob)
+- ✅ `observability` (Prometheus, Grafana, Loki, Jaeger, Datadog)
+- ✅ `payment` (Stripe, PayPal, YooKassa)
+- ✅ `notification` (Twilio, SendGrid, FCM, APNs)
+- ✅ `external-api` (REST/GraphQL/gRPC)
+- ✅ `legacy` (SOAP / mainframe)
+- ✅ `custom`
+- ✅ `_base/{overview.hbs, cross-cutting.hbs, traceability.hbs, section.hbs}` — общие секции
 
-### 4.5.3 Importers
+### 4.5.3 Importers ✅
 
-- [ ] `OpenApiImporter` — REST → `external-api`
-- [ ] `AsyncApiImporter` — Kafka/Rabbit → `message-broker`
-- [ ] `BpmnImporter` — BPMN-XML → `bpms`
+- ✅ `OpenApiImporter` — JSON OpenAPI → `external-api` (servers, operations)
+- ✅ `AsyncApiImporter` — JSON AsyncAPI → `message-broker` (channels, protocol, consumer groups)
+- ✅ `BpmnImporter` — BPMN-XML → `bpms` (processes, userTasks, serviceTasks, events; regex-based, без новых deps)
 
-### 4.5.4 Tests
+### 4.5.4 Tests ✅
 
-- [ ] `tests/unit/IntegrationCatalog.test.ts` — CRUD, валидация per-category
-- [ ] `tests/integration/integrations-flow.test.ts` — end-to-end add → list → show → import → spec
-- [ ] Golden test: на demo-кейсе (Camunda + RabbitMQ) проверить генерацию `INTEGRATIONS.md`
+- ✅ `tests/unit/IntegrationCatalog.test.ts` — уже существовал (Phase 2)
+- ✅ `tests/unit/IntegrationCategoryRegistry.test.ts` — descriptors + per-category extras validation
+- ✅ `tests/unit/Importers.test.ts` — OpenAPI / AsyncAPI / BPMN
+- ✅ `tests/integration/IntegrationsFlow.test.ts` — end-to-end add → list → show → import → spec, plus validate warning
 
 ---
 

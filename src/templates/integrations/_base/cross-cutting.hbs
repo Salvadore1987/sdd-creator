@@ -1,0 +1,7 @@
+## Cross-cutting concerns
+
+- **Secrets management** — every credential reference must point to a vault path; raw secrets are forbidden in `integrations.json`.
+- **Rate-limit & retry** — adapters must implement bounded retries with jitter; surface `429` / provider-specific limits to the caller.
+- **Observability** — every outbound call emits a span and structured log line with the integration ID for correlation.
+- **Failure modes** — every entry below explicitly documents how the system degrades when the integration is unhealthy.
+

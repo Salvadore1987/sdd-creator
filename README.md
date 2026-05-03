@@ -3,7 +3,7 @@
 > Spec-anchored development driver, powered by Claude.
 > CLI, который превращает разговор о фиче в полноценный **Software Design Document** по arc42 / IEEE 29148 — с диаграммами, ADR, traceability и каталогом интеграций.
 
-> ⚠️ **Статус:** Phase 4 завершена. Готовы каркас проекта, доменное ядро, ports/adapters, команды `sdd init` и `sdd brainstorm <topic>` (10 этапов). Команды `integrations`, `spec`, `lint` ещё не реализованы.
+> ⚠️ **Статус:** Phase 4.5 завершена. Готовы каркас проекта, доменное ядро, ports/adapters, команды `sdd init`, `sdd brainstorm <topic>` (10 этапов), `sdd integrations <list|show|add|edit|remove|validate|import|spec>` (13 категорий + OpenAPI/AsyncAPI/BPMN импортёры). Команды `spec`, `lint` ещё не реализованы.
 
 ---
 
@@ -203,111 +203,64 @@ sdd brainstorm anti --skip
 
 ### 3. `sdd integrations` — каталог зависимых систем
 
-Отдельная команда: интеграции живут собственным жизненным циклом.
+Интеграции живут собственным жизненным циклом и хранятся в `.sdd/integrations.json`. Поддерживаются 13 категорий с per-category Zod-схемами для `extra`:
 
-```bash
-$ sdd integrations add
-? Категория:
-  ❯ bpms / workflow      (Camunda, Temporal, Flowable)
-    message-broker       (RabbitMQ, Kafka, NATS)
-    database
-    cache
-    identity
-    storage
-    observability
-    search
-    payment
-    notification
-    external-api
-    legacy
-    custom
-
-? Категория › bpms
-? Какой движок? Camunda 8 (Zeebe)
-? Назначение: оркестрация процесса approve-loan
-? Критичность: critical
-? Какие BPMN-процессы? loan-approval-process
-? Job workers (по типу)? credit-check, underwriting, contract-sign
-? Correlation key? applicationId
-? Что делаем при недоступности Zeebe?
-   ❯ circuit breaker → degraded mode (синхронный fallback)
-     fail fast
-     retry с экспонентой
-? SLA провайдера: 99.9% / p95 200ms
-? Compliance? PII в payload запрещено
-
-✔ Сохранено: INT-001 Camunda BPMS
+```
+bpms | message-broker | database | cache | search | identity | storage
+observability | payment | notification | external-api | legacy | custom
 ```
 
-Аналогично для RabbitMQ:
+**Sub-commands:**
 
 ```bash
-$ sdd integrations add --category message-broker
-? Брокер › RabbitMQ
-? Топология exchange→queue:
-   • loan.events (topic) → loan.events.scoring.q
-   • loan.events (topic) → loan.events.audit.q
-? Producer'ы: LoanCommandHandler
-? Consumer'ы: ScoringWorker, AuditLogger
-? Ordering guarantee? per partition (routing key = applicationId)
-? At-least-once + idempotency? messageId-based dedup, окно 24h
-? DLQ-стратегия? loan.events.dlq + alert после 100 msgs
-? Retention? 7 дней
-
-✔ Сохранено: INT-002 RabbitMQ
+sdd integrations list                          # таблица INT-NNN | category | name
+sdd integrations show INT-001                  # JSON одной интеграции
+sdd integrations add --input camunda.json      # payload должен валидироваться per-category
+sdd integrations edit INT-001 -i patch.json    # merge-patch (категорию менять нельзя)
+sdd integrations remove INT-001
+sdd integrations validate                      # per-category extras + endpoints + secretsRef warning
+sdd integrations import --from openapi --file bureau.json
+sdd integrations import --from asyncapi --file orders.json
+sdd integrations import --from bpmn --file loan-origination.bpmn
+sdd integrations spec [-o docs/INTEGRATIONS.md]
 ```
 
-`integrations.json`:
+**Пример `camunda.json`** (без `id` — генерируется автоматически как `INT-NNN`):
 
 ```json
 {
-  "schemaVersion": 1,
-  "integrations": [
-    {
-      "id": "INT-001",
-      "name": "Camunda BPMS",
-      "category": "bpms",
-      "vendor": "Camunda", "version": "8.5",
-      "criticality": "critical",
-      "purpose": "Оркестрация процесса approve-loan",
-      "protocol": "gRPC + REST",
-      "authMethod": "OAuth2 client-credentials",
-      "topicsOrQueues": ["loan-approval-process"],
-      "sla": { "availability": "99.9%", "latencyP95Ms": 200 },
-      "errorHandling": "circuit breaker → degraded mode",
-      "idempotency": "messageId dedup 24h",
-      "owner": "Platform Team",
-      "secretsRef": "vault://camunda/prod"
-    },
-    {
-      "id": "INT-002",
-      "name": "RabbitMQ",
-      "category": "message-broker",
-      "criticality": "critical",
-      "protocol": "AMQP 0.9.1",
-      "topology": {
-        "exchanges": [{ "name": "loan.events", "type": "topic" }],
-        "queues": ["loan.events.scoring.q", "loan.events.audit.q"],
-        "dlq": "loan.events.dlq"
-      },
-      "ordering": "per-partition by routingKey=applicationId",
-      "delivery": "at-least-once + dedup"
-    }
-  ]
+  "category": "bpms",
+  "name": "Camunda 8",
+  "vendor": "Camunda",
+  "purpose": "Loan origination workflow",
+  "endpoints": [{ "name": "gateway", "protocol": "grpc", "url": "zeebe://camunda:26500" }],
+  "auth": { "mode": "oauth2", "secretsRef": "vault://camunda/sa" },
+  "errorHandling": "circuit breaker → degraded mode",
+  "extra": {
+    "engine": "camunda-8",
+    "processes": ["loanOrigination"],
+    "jobWorkers": ["credit-check", "underwriting"],
+    "correlationKeys": ["applicationId"],
+    "sagas": ["manual-underwriting"],
+    "retentionDays": 30,
+    "bpmnFile": "./bpmn/loan-origination.bpmn"
+  }
 }
 ```
 
-Управление:
+**Импортёры.** `import` подхватывает уже существующие спецификации:
+- `--from openapi` (JSON OpenAPI 3.x) → создаёт `external-api` с `extra.operations` и серверами.
+- `--from asyncapi` (JSON AsyncAPI 2.x) → создаёт `message-broker` с топиками и consumer-группами.
+- `--from bpmn` (BPMN-XML) → создаёт `bpms` с processes / jobWorkers / sagas (regex-парсер, без новых deps).
 
-```bash
-sdd integrations list
-sdd integrations show INT-001
-sdd integrations edit INT-001
-sdd integrations remove INT-001
-sdd integrations validate
-sdd integrations import --from asyncapi rabbit.yaml   # авто-заполнение
-sdd integrations import --from bpmn loan-approval.bpmn
-```
+YAML-варианты OpenAPI/AsyncAPI пока требуют ручной конвертации в JSON.
+
+**`spec` рендерит `docs/INTEGRATIONS.md`** через Handlebars-шаблоны:
+- `_base/overview.hbs` — таблица всех интеграций.
+- `_base/cross-cutting.hbs` — общие требования (secrets, rate-limit, observability).
+- `_base/section.hbs` — карточка на каждую интеграцию (purpose / endpoints / SLA / auth / categoryExtra JSON).
+- `<category>/diagram.hbs` (для bpms / message-broker / database) — Mermaid диаграмма.
+- `_base/traceability.hbs` — таблица "интеграция → FR-NNN использующие её".
 
 ### 4. `sdd spec` — собрать документы
 

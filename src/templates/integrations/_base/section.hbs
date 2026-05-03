@@ -1,0 +1,49 @@
+### {{integration.id}} — {{integration.name}} ({{integration.category}})
+
+- **Purpose:** {{integration.purpose}}
+{{#if integration.vendor}}
+- **Vendor:** {{integration.vendor}}
+{{/if}}
+
+**Endpoints**
+
+| Name | Protocol | URL |
+| --- | --- | --- |
+{{#each integration.endpoints}}
+| {{this.name}} | {{this.protocol}} | {{this.url}} |
+{{/each}}
+
+{{#if integration.slaTargets}}
+**SLA targets**
+
+- Availability: `{{integration.slaTargets.availability}}`
+- P95 latency: `{{integration.slaTargets.latencyP95Ms}}ms`
+{{/if}}
+
+{{#if integration.auth}}
+**Auth**
+
+- Mode: `{{integration.auth.mode}}`
+- Secrets ref: `{{integration.auth.secretsRef}}`
+{{/if}}
+
+{{#if integration.errorHandling}}
+**Error handling.** {{integration.errorHandling}}
+{{/if}}
+{{#if integration.rateLimits}}
+**Rate limits.** {{integration.rateLimits}}
+{{/if}}
+{{#if integration.observability}}
+**Observability.** {{integration.observability}}
+{{/if}}
+{{#if integration.versioning}}
+**Versioning.** {{integration.versioning}}
+{{/if}}
+
+{{#if integration.extra}}
+**Category-specific details**
+
+```json
+{{categoryExtraJson}}
+```
+{{/if}}

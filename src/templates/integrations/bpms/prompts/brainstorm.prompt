@@ -1,0 +1,40 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+Help register a BPMS / workflow engine integration (Camunda 7/8/Zeebe, Flowable, Temporal, Conductor).
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Schema:
+{
+  "name": string,                        // e.g. "Camunda 8"
+  "vendor": string,                      // optional
+  "purpose": string,
+  "endpoints": [{ "name": string, "protocol": string, "url": string }],
+  "slaTargets": { "availability": string, "latencyP95Ms": number },   // optional
+  "auth": { "mode": string, "secretsRef": string },                   // optional
+  "errorHandling": string,                                            // optional
+  "rateLimits": string,                                               // optional
+  "observability": string,                                            // optional
+  "versioning": string,                                               // optional
+  "extra": {
+    "engine": string,                    // "camunda-8" | "camunda-7" | "temporal" | "flowable" | ...
+    "processes": string[],
+    "jobWorkers": string[],
+    "correlationKeys": string[],
+    "sagas": string[],
+    "retentionDays": number,
+    "versioning": string,
+    "bpmnFile": string                   // optional path to .bpmn for diagram import
+  }
+}
+
+Constraints:
+- Do NOT include "id" — INT-NNN is assigned by the tool.
+- Cover process retention, retries, correlation, saga compensation, deployment versioning.
+
+Return JSON only.
