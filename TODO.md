@@ -74,14 +74,14 @@
 
 ---
 
-## Phase 3 — `init` Command
+## Phase 3 — `init` Command ✅
 
-- [ ] `src/application/InitService.ts` — создаёт `.sdd/{config.json,requirements.json,integrations.json}`, копирует stack/arch templates
-- [ ] При `provider=cli` — probe `claude --version`; если не найден или нет авторизации — печатать понятную инструкцию и **продолжить** (init не должен валиться)
-- [ ] `src/commands/init.command.ts` — inquirer flow (см. Phase 3 в SDD_CREATOR.md): провайдер → язык → фреймворк → архитектура → технологии → метаданные
-- [ ] Идемпотентность: при существующем `.sdd/` — спросить `overwrite | merge | abort` (default abort)
-- [ ] `tests/integration/InitService.test.ts` — temp dir, проверка структуры файлов, корректного `claude.provider` в config
-- [ ] e2e smoke: `sdd init --non-interactive --config fixtures/init.json`
+- ✅ `src/application/InitService.ts` — создаёт `.sdd/{config.json,requirements.json,integrations.json}`, копирует stack/arch templates
+- ✅ При `provider=cli` — probe `claude --version`; если не найден или нет авторизации — печатать понятную инструкцию и **продолжить** (init не должен валиться)
+- ✅ `src/commands/init.command.ts` — inquirer flow (см. Phase 3 в SDD_CREATOR.md): провайдер → язык → фреймворк → архитектура → технологии → метаданные
+- ✅ Идемпотентность: при существующем `.sdd/` — `--force` overwrite, `--merge` keep-existing, default abort
+- ✅ `tests/integration/InitService.test.ts` — temp dir, проверка структуры файлов, корректного `claude.provider` в config
+- ✅ e2e smoke: `sdd init --non-interactive --config fixtures/init.json`
 
 ---
 
