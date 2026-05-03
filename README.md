@@ -3,7 +3,7 @@
 > Spec-anchored development driver, powered by Claude.
 > CLI, который превращает разговор о фиче в полноценный **Software Design Document** по arc42 / IEEE 29148 — с диаграммами, ADR, traceability и каталогом интеграций.
 
-> ⚠️ **Статус:** pre-implementation. Репозиторий содержит спецификацию (`SDD_CREATOR.md`), `package.json` и исходники появятся в Phase 1 разработки.
+> ⚠️ **Статус:** Phase 3 завершена. Готовы каркас проекта, доменное ядро, ports/adapters и команда `sdd init`. Команды `brainstorm`, `integrations`, `spec`, `lint` ещё не реализованы.
 
 ---
 
@@ -70,30 +70,65 @@ export ANTHROPIC_API_KEY=sk-ant-...
 ```bash
 $ sdd init
 ? Project name: loan-service
-? Description: Микросервис обработки заявок на кредит
-? Version: 0.1.0
-? Author: Eldar <eldar@example.com>
-? Language: › Java
-? Framework: › Spring Boot 3.3
-? Architecture: › Hexagonal
-? Technologies: ◉ PostgreSQL ◉ Camunda ◉ RabbitMQ ◉ Keycloak
-? Team size: 4
-? Complexity: medium
-? Deadline: 2026-Q3
+? Project description (optional): Микросервис обработки заявок на кредит
+? Owner / team (optional): platform-team
+? Repository URL (optional): https://github.com/example/loan-service
+? Claude provider: › cli
+? Stack: › java
+? Architecture: › hexagonal
+? Doc language: › en
+? Technologies (comma-separated): Spring Boot 3, PostgreSQL 16, RabbitMQ, Keycloak
+? Claude model override (optional):
 
-✔ Created .sdd/config.json
-✔ Created .sdd/requirements.json (skeleton)
-✔ Copied templates for java/spring-boot + hexagonal
+SDD project initialised.
+  config:        .sdd/config.json
+  requirements:  .sdd/requirements.json
+  integrations:  .sdd/integrations.json
+  stack tmpl:    .sdd/templates/stack.md
+  arch  tmpl:    .sdd/templates/architecture.md
+  Claude CLI:    2.1.126 (Claude Code)
+```
+
+**Идемпотентность.** При повторном запуске:
+
+| Флаг       | Поведение                                                     |
+| ---------- | ------------------------------------------------------------- |
+| (default)  | abort с сообщением, что `.sdd/` уже существует                |
+| `--force`  | удалить `.sdd/` и пересоздать                                 |
+| `--merge`  | оставить уже существующие файлы, дописать только недостающие  |
+
+**Без интерактива** (для CI и воспроизводимых демо):
+
+```bash
+sdd init --non-interactive --config init.json
+```
+
+`init.json`:
+
+```json
+{
+  "metadata": { "name": "loan-service", "description": "demo" },
+  "stack": "java",
+  "architecture": "hexagonal",
+  "language": "en",
+  "technologies": ["Spring Boot 3", "PostgreSQL 16"],
+  "claudeProvider": "cli"
+}
 ```
 
 Результат — `.sdd/` в корне проекта:
 
 ```
 .sdd/
-├── config.json          # метаданные проекта, стек, архитектура
-├── requirements.json    # пустой каркас
-└── integrations.json    # пустой каркас
+├── config.json              # метаданные проекта, стек, архитектура, claude.provider
+├── requirements.json        # пустой каркас всех 10 топиков (status: pending)
+├── integrations.json        # { schemaVersion, integrations: [] }
+└── templates/
+    ├── stack.md             # отрендеренный per-stack init template
+    └── architecture.md      # отрендеренный per-architecture init template
 ```
+
+Для `provider=cli` команда дополнительно делает `claude --version` probe — если CLI не установлен или не залогинен, выводится подсказка, но `init` **не падает**.
 
 ### 2. `sdd brainstorm` — собрать требования по этапам
 
