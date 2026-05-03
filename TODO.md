@@ -85,37 +85,37 @@
 
 ---
 
-## Phase 4 — `brainstorm` Command (10 этапов)
+## Phase 4 — `brainstorm` Command (10 этапов) ✅
 
-### 4.1 Каркас
+### 4.1 Каркас ✅
 
-- [ ] `src/application/BrainstormService.ts` — общий runner для всех этапов
-- [ ] `src/commands/brainstorm.command.ts` — sub-commands ИЛИ единое меню выбора этапа
-- [ ] Каждый этап:
-  - свой prompt-файл `src/templates/stacks/<stack>/prompts/brainstorm-<topic>.prompt`
-  - своя Zod-схема под секцию
-  - результат пишется под отдельный ключ в `requirements.json`, не перезаписывая остальное
-- [ ] Опция `Skip for now` / флаг `--skip` на каждом этапе → `status: "skipped"` + `skippedAt`
-- [ ] Авто-постановка `status: "stale"` для зависимых секций при изменениях (matrix зависимостей в `StatusTracker`)
-- [ ] Уточняющие вопросы Claude → парсинг JSON ответа → диалог → финальный compile
+- ✅ `src/application/BrainstormService.ts` — общий runner для всех этапов
+- ✅ `src/commands/brainstorm.command.ts` — Commander sub-commands per topic
+- ✅ Каждый этап:
+  - свой prompt-файл `src/templates/base/brainstorm/<topic>.prompt` (с per-stack override через `src/templates/stacks/<stack>/prompts/brainstorm-<topic>.prompt`, через `PromptLoader`)
+  - своя Zod-схема под секцию (`src/domain/BrainstormSchemas.ts`)
+  - результат пишется под отдельный ключ в `requirements.json` через `RequirementsMerger`, остальные секции не трогаются
+- ✅ Флаг `--skip` на каждом этапе → `status: "skipped"` + `skippedAt`
+- ✅ Авто-постановка `status: "stale"` для зависимых секций при изменениях (`StatusTracker.propagateStaleness`)
+- ✅ Парсинг JSON ответа через `IClaudeProvider.completeJson(prompt, schema)`; уточняющие вопросы (multi-turn) — отложены на 5.5/`sdd add`
 
-### 4.2 Этапы (по одному файлу промпта + теста на каждый)
+### 4.2 Этапы (по одному файлу промпта + теста на каждый) ✅
 
-- [ ] `stakeholders` — personas, roles, owners
-- [ ] `context` — problem statement, цели, KPIs, бюджет, дедлайны
-- [ ] `constraints` — регуляторика (GDPR/HIPAA/PCI), tech limits, assumptions
-- [ ] `glossary` — ubiquitous language (DDD)
-- [ ] `features` — use cases, FR-NNN, acceptance criteria, связь `usesIntegrations: ["INT-*"]`
-- [ ] `domain` — bounded contexts, агрегаты, value objects, domain events (DDD)
-- [ ] `quality` — измеримые NFR (`p95 < 200ms @ 1000 RPS`, `RTO 15m`, `RPO 5m`)
-- [ ] `dependencies` — линковка к каталогу интеграций (см. Phase 4.5)
-- [ ] `anti` — out-of-scope items
-- [ ] `compliance` — security & compliance requirements
+- ✅ `stakeholders` — personas, roles, owners
+- ✅ `context` — problem statement, цели, KPIs, бюджет, дедлайны
+- ✅ `constraints` — регуляторика (GDPR/HIPAA/PCI), tech limits, assumptions
+- ✅ `glossary` — ubiquitous language (DDD)
+- ✅ `features` — use cases, FR-NNN, acceptance criteria, связь `usesIntegrations: ["INT-*"]`
+- ✅ `domain` — bounded contexts, агрегаты, value objects, domain events (DDD)
+- ✅ `quality` — измеримые NFR (`p95 < 200ms @ 1000 RPS`, `RTO 15m`, `RPO 5m`)
+- ✅ `dependencies` — линковка к каталогу интеграций (через `IntegrationCatalog.ids()`)
+- ✅ `anti` — out-of-scope items
+- ✅ `compliance` — security & compliance requirements
 
-### 4.3 Tests
+### 4.3 Tests ✅
 
-- [ ] `tests/integration/BrainstormService.test.ts` (mock `IClaudeProvider`, fixtures на каждый topic)
-- [ ] Snapshot-тест на финальный JSON по каждому topic'у
+- ✅ `tests/integration/BrainstormService.test.ts` (stub `IClaudeProvider` per topic, проверка persist + ID assignment + staleness + skip)
+- ✅ `tests/unit/RequirementsMerger.test.ts` + `tests/unit/PromptLoader.test.ts`
 
 ---
 

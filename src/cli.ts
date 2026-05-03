@@ -3,6 +3,7 @@
 
 import { Command, Option } from 'commander';
 
+import { buildBrainstormCommand } from './commands/brainstorm.command';
 import { buildInitCommand } from './commands/init.command';
 
 const program = new Command();
@@ -15,6 +16,7 @@ program
   .option('--verbose', 'Enable debug logging');
 
 program.addCommand(buildInitCommand());
+program.addCommand(buildBrainstormCommand());
 
 program.parseAsync(process.argv).catch((error: unknown) => {
   console.error(error);

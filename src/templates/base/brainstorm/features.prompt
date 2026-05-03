@@ -1,0 +1,42 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+You are drafting functional requirements (features) for the SDD.
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Existing features already captured ({{requirements.features.items.length}}):
+{{#each requirements.features.items}}
+- {{this.id}} — {{this.title}} (priority: {{this.priority}})
+{{/each}}
+
+Existing integrations available for reference:
+{{extra.knownIntegrationIds}}
+
+Schema:
+{
+  "items": [
+    {
+      "title":       string,
+      "description": string,
+      "priority":    "must" | "should" | "could" | "wont",
+      "acceptanceCriteria": [
+        { "given": string, "when": string, "then": string }
+      ],
+      "usesIntegrations": string[]   // optional, only INT-NNN ids that already exist
+      "tags":             string[]   // optional
+    }
+  ]
+}
+
+Constraints:
+- Do NOT include "id" — IDs are assigned by the tool (FR-NNN, AC-FR-NNN-N).
+- Every feature MUST have at least one acceptance criterion in Given/When/Then form.
+- "usesIntegrations" must reference only IDs from the list above; omit otherwise.
+- Use MoSCoW values exactly ("must" | "should" | "could" | "wont").
+
+Return JSON only.

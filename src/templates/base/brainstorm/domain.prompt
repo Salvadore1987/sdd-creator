@@ -1,0 +1,36 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+You are drafting the domain model (DDD aggregates / bounded contexts) for the SDD.
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Existing aggregates already captured ({{requirements.domain.aggregates.length}}):
+{{#each requirements.domain.aggregates}}
+- {{this.name}} (context: {{this.boundedContext}})
+{{/each}}
+
+Schema:
+{
+  "aggregates": [
+    {
+      "name":           string,
+      "boundedContext": string,
+      "description":    string,
+      "entities":       string[],
+      "valueObjects":   string[],
+      "events":         string[]    // domain events emitted by the aggregate
+    }
+  ]
+}
+
+Constraints:
+- One aggregate per consistency boundary. Keep them small.
+- "events" should be past-tense facts (e.g., "OrderPlaced", "PaymentCaptured").
+- Do NOT repeat aggregates already listed above.
+
+Return JSON only.

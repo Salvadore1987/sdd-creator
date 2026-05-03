@@ -1,0 +1,35 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+You are helping the team identify stakeholders for the SDD.
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Existing stakeholders already captured ({{requirements.stakeholders.items.length}}):
+{{#each requirements.stakeholders.items}}
+- {{this.id}} — {{this.name}} ({{this.role}})
+{{/each}}
+
+Schema:
+{
+  "items": [
+    {
+      "name": string,
+      "role": string,
+      "responsibilities": string[],
+      "influence": "low" | "medium" | "high"   // optional
+    }
+  ]
+}
+
+Constraints:
+- Do NOT include an "id" field — IDs are assigned by the tool (SH-NNN).
+- Do NOT repeat stakeholders that already appear above.
+- responsibilities must be a non-empty list of short bullet points.
+- Cover product/business, engineering, ops, security/compliance, and end users where applicable.
+
+Return JSON only.

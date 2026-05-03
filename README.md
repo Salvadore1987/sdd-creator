@@ -3,7 +3,7 @@
 > Spec-anchored development driver, powered by Claude.
 > CLI, который превращает разговор о фиче в полноценный **Software Design Document** по arc42 / IEEE 29148 — с диаграммами, ADR, traceability и каталогом интеграций.
 
-> ⚠️ **Статус:** Phase 3 завершена. Готовы каркас проекта, доменное ядро, ports/adapters и команда `sdd init`. Команды `brainstorm`, `integrations`, `spec`, `lint` ещё не реализованы.
+> ⚠️ **Статус:** Phase 4 завершена. Готовы каркас проекта, доменное ядро, ports/adapters, команды `sdd init` и `sdd brainstorm <topic>` (10 этапов). Команды `integrations`, `spec`, `lint` ещё не реализованы.
 
 ---
 
@@ -130,76 +130,76 @@ sdd init --non-interactive --config init.json
 
 Для `provider=cli` команда дополнительно делает `claude --version` probe — если CLI не установлен или не залогинен, выводится подсказка, но `init` **не падает**.
 
-### 2. `sdd brainstorm` — собрать требования по этапам
+### 2. `sdd brainstorm <topic>` — собрать требования по этапам
 
-Brainstorm — это **не один цикл**, а серия суб-этапов. Любой можно пропустить и добавить позже.
+Brainstorm — это **не один цикл**, а серия суб-команд (по одной на топик). Любую можно пропустить и добавить позже. Поддерживаемые топики:
+
+```
+stakeholders | context | constraints | glossary | features
+domain       | quality | dependencies | anti     | compliance
+```
+
+Опции каждой суб-команды:
+
+| Флаг                       | Что делает                                                                                       |
+| -------------------------- | ------------------------------------------------------------------------------------------------ |
+| `-d, --description <text>` | Передать описание/инпут одной строкой                                                            |
+| `-i, --input <file>`       | Прочитать описание из файла (удобно для CI и большого Markdown)                                  |
+| `--skip`                   | Не звать Claude, выставить `status: "skipped"` + `skippedAt`                                     |
+
+Пример:
 
 ```bash
-$ sdd brainstorm
-? Что хотите проработать?
-  ❯ stakeholders   — кто пользователи, заказчик, оператор
-    context        — problem statement, цели, KPIs
-    constraints    — регуляторика, бюджет, технологические лимиты
-    glossary       — ubiquitous language
-    features       — use cases, FRs, acceptance criteria
-    domain         — bounded contexts, агрегаты, события (DDD)
-    quality        — измеримые NFR (p95, RTO/RPO)
-    anti           — out of scope
-    compliance     — security & compliance
-    [Skip for now]
+$ sdd brainstorm features --description "Customer submits a loan application; system performs automated scoring; borderline cases go to manual underwriting."
+
+✔ brainstorm features — completed @ 2026-05-03T11:02:31.014Z
+  inputsHash: 8f0c…b431
 ```
 
-Пример прохода `features`:
-
-```
-? Опишите фичу: Заявка на кредит подаётся клиентом через мобильное приложение,
-проходит автоматический скоринг, в случае пограничного score уходит на ручной
-андеррайтинг, по подтверждению выпускается договор.
-
-🤖 Claude: уточняющие вопросы
-  1. Какой допустимый latency для скоринга? (sync vs async)
-  2. Что делать при таймауте бюро кредитных историй?
-  3. Возможно ли частичное одобрение (на меньшую сумму)?
-  ...
-
-✔ Сохранено: FR-001 "Loan application intake"
-   • 6 acceptance criteria
-   • 3 risks identified
-   • 2 NFR scenarios (NFR-001, NFR-002)
-   • Связано с интеграциями: [Camunda BPMS, RabbitMQ] — добавить сейчас? (y/N)
-```
-
-После прогона `requirements.json` выглядит так:
+`requirements.json` после прогона:
 
 ```json
 {
   "schemaVersion": 1,
-  "stakeholders": { "status": "completed", "data": [...] },
-  "context":      { "status": "completed", "data": {...} },
-  "glossary":     { "status": "skipped" },
   "features": {
-    "status": "completed",
-    "data": [
+    "state": { "status": "completed", "updatedAt": "2026-05-03T11:02:31.014Z", "inputsHash": "8f0c…" },
+    "items": [
       {
         "id": "FR-001",
-        "title": "Loan application intake",
+        "title": "Submit loan application",
         "description": "...",
+        "priority": "must",
         "acceptanceCriteria": [
-          { "id": "AC-001-1", "given": "клиент авторизован",
-            "when": "подаёт заявку", "then": "получает trackingId за <500ms" }
+          { "id": "AC-FR-001-1", "given": "logged-in customer", "when": "valid submission", "then": "confirmation displayed" }
         ],
-        "risks": [{ "id": "RISK-001", "likelihood": "medium",
-                    "impact": "high", "mitigation": "..." }],
-        "usesIntegrations": ["INT-001", "INT-002"]
+        "usesIntegrations": ["INT-001"]
       }
     ]
-  },
-  "nfrs": { "status": "completed", "data": [
-    { "id": "NFR-001", "category": "performance",
-      "scenario": "p95 < 500ms на /loans при 200 RPS" }
-  ]}
+  }
 }
 ```
+
+**Стабильные ID** генерируются клиентом (`FR-NNN`, `NFR-NNN`, `SH-NNN`, `AC-FR-NNN-N`) — Claude их не выдумывает.
+
+**Зависимости между топиками.** Если перегенерировать топик, от которого зависят другие *completed*-секции, они автоматически становятся `stale` (см. `TOPIC_DEPENDENCIES` в `StatusTracker`):
+
+```
+stakeholders → context → constraints
+glossary → features → { domain, quality, dependencies }
+context → anti
+constraints → compliance
+```
+
+**Skip:**
+
+```bash
+sdd brainstorm anti --skip
+# ⏭ brainstorm anti — skipped at 2026-05-03T11:03:08.221Z
+```
+
+**Per-stack overrides.** Базовые промпты живут в `src/templates/base/brainstorm/<topic>.prompt`. Если нужен стек-специфичный промпт, положите его в `src/templates/stacks/<stack>/prompts/brainstorm-<topic>.prompt` — `PromptLoader` подхватит его автоматически вместо базового.
+
+**Кэш.** Все вызовы Claude обёрнуты в `CachingClaudeProvider` — повтор brainstorm с теми же входами читается из `.sdd/cache/`, без сжигания токенов/подписки.
 
 ### 3. `sdd integrations` — каталог зависимых систем
 

@@ -1,0 +1,30 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+You are linking the project to external dependencies (the Integrations Catalog).
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Known integration IDs already in the catalog:
+{{extra.knownIntegrationIds}}
+
+Existing linked refs ({{requirements.dependencies.integrationRefs.length}}):
+{{#each requirements.dependencies.integrationRefs}}
+- {{this}}
+{{/each}}
+
+Schema:
+{
+  "integrationRefs": string[]   // INT-NNN ids only — must be present in the catalog above
+}
+
+Constraints:
+- Only include INT-NNN values that appear in the "Known integration IDs" list.
+- Do NOT invent IDs — if a needed integration is missing, the user must run `sdd integrations add` first.
+- Do NOT repeat refs already listed above.
+
+Return JSON only.

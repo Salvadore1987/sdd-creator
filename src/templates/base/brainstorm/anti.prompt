@@ -1,0 +1,26 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+You are listing anti-requirements (out-of-scope items) for the SDD.
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Existing anti-requirements ({{requirements.anti.items.length}}):
+{{#each requirements.anti.items}}
+- {{this}}
+{{/each}}
+
+Schema:
+{
+  "items": string[]   // each entry is one short sentence describing what is OUT of scope
+}
+
+Constraints:
+- Each item must be an explicit non-goal. Avoid hedging ("we might consider...").
+- Do NOT repeat items already listed above.
+
+Return JSON only.

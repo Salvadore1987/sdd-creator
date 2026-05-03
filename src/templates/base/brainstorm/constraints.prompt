@@ -1,0 +1,30 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+You are helping enumerate constraints for the SDD.
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Existing constraints already captured ({{requirements.constraints.items.length}}):
+{{#each requirements.constraints.items}}
+- {{this}}
+{{/each}}
+
+Schema:
+{
+  "items": string[]   // each entry is a single constraint sentence
+}
+
+Constraints to consider:
+- Regulatory (GDPR, HIPAA, PCI-DSS, SOX, ...)
+- Technical limits (must run on JVM 21, no internet egress, ...)
+- Organisational (team size, third-party vendor lock-in, ...)
+- Assumptions that should be explicit (e.g., "single-region deployment").
+
+Return one short sentence per constraint. Do NOT repeat constraints already listed above.
+
+Return JSON only.
