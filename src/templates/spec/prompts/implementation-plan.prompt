@@ -1,0 +1,7 @@
+Produce a markdown body (no top-level heading) for the **Implementation Plan**. Provide 4–6 phases with rough duration, dependencies, exit criteria. Use a checklist format under each phase.
+
+Project: {{config.metadata.name}}
+Top features:
+{{#each requirements.features.items}}
+- {{this.id}} {{this.title}} ({{this.priority}})
+{{/each}}

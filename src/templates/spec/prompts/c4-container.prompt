@@ -1,0 +1,14 @@
+Produce a Mermaid `C4Container` diagram for this system. Output ONLY the diagram body (no fences, no commentary).
+
+Project: {{config.metadata.name}} ({{config.architecture}}, {{config.stack}})
+Major bounded contexts: {{#each requirements.domain.aggregates}}{{this.boundedContext}}; {{/each}}
+External integrations:
+{{#each integrations}}
+- {{this.id}} {{this.name}} ({{this.category}}) — {{this.purpose}}
+{{/each}}
+
+Constraints:
+- First line MUST be `C4Container`.
+- Use `Person`, `System`, `Container`, `Rel` nodes only.
+- Keep node labels short (<= 40 chars).
+- Up to 8 containers; do not invent integrations beyond the list above.

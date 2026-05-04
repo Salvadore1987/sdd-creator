@@ -1,0 +1,67 @@
+## 9. Deployment & Operations
+
+{{#if narrative}}
+{{narrative}}
+{{/if}}
+
+### 9.1 SLA / SLO / SLI
+
+{{#if slaNarrative}}
+{{slaNarrative}}
+{{else}}
+{{#if requirements.quality.nfrs.length}}
+Derived from quality NFRs:
+
+{{#each nfrSlaSubset}}
+- **{{this.id}}** — {{this.statement}} → `{{this.measurableTarget}}`
+{{/each}}
+{{else}}
+_No SLOs defined. Add measurable targets via `sdd brainstorm quality`._
+{{/if}}
+{{/if}}
+
+### 9.2 Observability Plan
+
+{{#if observabilityNarrative}}
+{{observabilityNarrative}}
+{{else}}
+- **Logs:** structured JSON; correlate via `requestId` / `traceId`.
+- **Metrics:** RED method (Rate, Errors, Duration) per endpoint; USE method (Utilization, Saturation, Errors) for resources.
+- **Traces:** OpenTelemetry, sampled at 10% baseline + tail-based on errors.
+- **Alerts:** SLO burn-rate (1h fast / 24h slow) → on-call pager.
+- **Dashboards:** per-service operational dashboard + capacity dashboard.
+{{/if}}
+
+### 9.3 Capacity & Scaling
+
+{{#if capacityNarrative}}
+{{capacityNarrative}}
+{{/if}}
+
+### 9.4 Cost Model
+
+{{#if costNarrative}}
+{{costNarrative}}
+{{/if}}
+
+### 9.5 Disaster Recovery
+
+{{#if drNarrative}}
+{{drNarrative}}
+{{/if}}
+
+### 9.6 Migration & Rollback
+
+{{#if migrationNarrative}}
+{{migrationNarrative}}
+{{/if}}
+
+### 9.7 Change Management
+
+{{#if changeNarrative}}
+{{changeNarrative}}
+{{else}}
+- Trunk-based development; feature flags gate user-visible behavior.
+- Canary rollout: 1% → 10% → 50% → 100% with automatic rollback on SLO burn.
+- Blue/green for stateful migrations; database changes are forward-compatible.
+{{/if}}

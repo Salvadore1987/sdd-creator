@@ -1,0 +1,11 @@
+## 2. Stakeholders & Personas
+
+{{#if requirements.stakeholders.items.length}}
+| ID | Name | Role | Influence | Responsibilities |
+| --- | --- | --- | --- | --- |
+{{#each requirements.stakeholders.items}}
+| {{this.id}} | {{this.name}} | {{this.role}} | {{#if this.influence}}{{this.influence}}{{else}}—{{/if}} | {{join this.responsibilities "; "}} |
+{{/each}}
+{{else}}
+_No stakeholders captured. Run `sdd brainstorm stakeholders`._
+{{/if}}

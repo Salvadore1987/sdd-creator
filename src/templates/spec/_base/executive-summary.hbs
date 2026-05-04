@@ -1,0 +1,25 @@
+## 1. Executive Summary
+
+{{#if requirements.context.statement}}
+**Problem.** {{requirements.context.statement}}
+{{/if}}
+
+{{#if requirements.context.goals.length}}
+**Goals**
+
+{{#each requirements.context.goals}}
+- {{this}}
+{{/each}}
+{{/if}}
+
+{{#if requirements.context.kpis.length}}
+**Key Performance Indicators**
+
+{{#each requirements.context.kpis}}
+- {{this}}
+{{/each}}
+{{/if}}
+
+{{#if narrative}}
+{{narrative}}
+{{/if}}

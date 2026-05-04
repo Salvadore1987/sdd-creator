@@ -1,0 +1,18 @@
+You are a senior solutions architect. Produce **a markdown narrative** describing the system architecture for the following project.
+
+Project: {{config.metadata.name}}
+Stack: {{config.stack}} · Architecture style: {{config.architecture}} · Language: {{config.language}}
+Technologies: {{join config.technologies ", "}}
+
+Goals: {{#if requirements.context.goals.length}}{{join requirements.context.goals "; "}}{{else}}(not captured){{/if}}
+Constraints: {{#if requirements.constraints.items.length}}{{join requirements.constraints.items "; "}}{{else}}(none){{/if}}
+Bounded contexts: {{#each requirements.domain.aggregates}}{{this.name}} ({{this.boundedContext}}); {{/each}}
+Integrations: {{#each integrations}}{{this.id}} {{this.name}} ({{this.category}}); {{/each}}
+
+Write 3–5 short paragraphs (NOT a list) that cover:
+1. High-level shape — major containers, communication style, data flow.
+2. How the chosen architectural style ({{config.architecture}}) is realised concretely in this stack.
+3. Key cross-cutting concerns (auth, observability, configuration, reliability).
+4. How external integrations plug in.
+
+Output ONLY the markdown body — no fences, no preamble, no closing remarks.

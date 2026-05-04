@@ -1,0 +1,11 @@
+## 5. Glossary
+
+{{#if requirements.glossary.terms.length}}
+| Term | Definition | Synonyms | Related |
+| --- | --- | --- | --- |
+{{#each requirements.glossary.terms}}
+| **{{this.term}}** | {{this.definition}} | {{#if this.synonyms.length}}{{join this.synonyms ", "}}{{else}}—{{/if}} | {{#if this.relatedTerms.length}}{{join this.relatedTerms ", "}}{{else}}—{{/if}} |
+{{/each}}
+{{else}}
+_No glossary terms captured. Run `sdd brainstorm glossary`._
+{{/if}}

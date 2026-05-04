@@ -1,0 +1,5 @@
+Produce a markdown body (no top-level heading) for the **Observability Plan** subsection. Cover logs, metrics, traces, alerts, dashboards. Mention specific signals to track.
+
+Project: {{config.metadata.name}} · stack: {{config.stack}}
+Observability integrations: {{#each observabilityIntegrations}}{{this.id}} {{this.name}}; {{/each}}
+NFRs touching ops: {{#each opsNfrs}}{{this.id}}: {{this.measurableTarget}}; {{/each}}

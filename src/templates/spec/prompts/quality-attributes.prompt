@@ -1,0 +1,6 @@
+Produce a short markdown commentary that follows the NFR table. 1–2 paragraphs. No headings. Discuss how the NFRs interact, trade-offs, and verification cadence (load tests, chaos drills, security reviews).
+
+NFRs:
+{{#each requirements.quality.nfrs}}
+- {{this.id}} {{this.category}}: {{this.statement}} → {{this.measurableTarget}}{{#if this.verificationMethod}} (verified by {{this.verificationMethod}}){{/if}}
+{{/each}}

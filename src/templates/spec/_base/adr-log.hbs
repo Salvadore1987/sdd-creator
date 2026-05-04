@@ -1,0 +1,25 @@
+## 11. Architecture Decision Records
+
+{{#if requirements.adrs.length}}
+{{#each requirements.adrs}}
+### {{this.id}} — {{this.title}}
+
+- **Status:** `{{this.status}}` _(created {{formatDate this.createdAt}})_
+
+**Context.** {{this.context}}
+
+**Decision.** {{this.decision}}
+
+**Consequences.** {{this.consequences}}
+
+{{#if this.alternatives.length}}
+**Alternatives considered:** {{join this.alternatives "; "}}
+{{/if}}
+{{#if this.relatedRequirements.length}}
+**Related:** {{join this.relatedRequirements ", "}}
+{{/if}}
+
+{{/each}}
+{{else}}
+_No ADRs recorded. Add via `sdd add adr`._
+{{/if}}

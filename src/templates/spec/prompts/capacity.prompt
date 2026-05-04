@@ -1,0 +1,4 @@
+Produce a markdown body (no top-level heading) for **Capacity & Scaling**. Cover expected load (RPS, concurrent users), scaling axes (vertical/horizontal/sharding), bottlenecks, and headroom.
+
+Project: {{config.metadata.name}} · architecture: {{config.architecture}}
+NFRs: {{#each requirements.quality.nfrs}}{{this.measurableTarget}}; {{/each}}

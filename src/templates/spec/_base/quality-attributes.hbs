@@ -1,0 +1,15 @@
+## 4. Quality Attributes (NFR)
+
+{{#if requirements.quality.nfrs.length}}
+| ID | Category | Statement | Measurable target | Verification |
+| --- | --- | --- | --- | --- |
+{{#each requirements.quality.nfrs}}
+| {{this.id}} | {{this.category}} | {{this.statement}} | `{{this.measurableTarget}}` | {{#if this.verificationMethod}}{{this.verificationMethod}}{{else}}—{{/if}} |
+{{/each}}
+{{else}}
+_No NFRs captured. Run `sdd brainstorm quality`._
+{{/if}}
+
+{{#if narrative}}
+{{narrative}}
+{{/if}}

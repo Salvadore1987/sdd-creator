@@ -1,0 +1,6 @@
+Produce a markdown body (no top-level heading) describing the deployment topology, environments, and operational practices.
+
+Project: {{config.metadata.name}} · architecture: {{config.architecture}} · stack: {{config.stack}}
+Integrations needing infra: {{#each integrations}}{{this.category}} {{this.name}}; {{/each}}
+
+Cover: environments (dev/staging/prod), packaging (container/binary), orchestration, secrets, CI/CD pipeline.

@@ -1,0 +1,11 @@
+Produce a concise executive summary for the following project. 2–3 short paragraphs, plain markdown, no headings, no bullet points unless absolutely needed.
+
+Project: {{config.metadata.name}}
+{{#if config.metadata.description}}Description: {{config.metadata.description}}{{/if}}
+
+Problem statement: {{#if requirements.context.statement}}{{requirements.context.statement}}{{else}}(not captured){{/if}}
+Goals: {{#if requirements.context.goals.length}}{{join requirements.context.goals "; "}}{{else}}(not captured){{/if}}
+Top KPIs: {{#if requirements.context.kpis.length}}{{join requirements.context.kpis "; "}}{{else}}(not captured){{/if}}
+Stakeholders: {{#each requirements.stakeholders.items}}{{this.role}}; {{/each}}
+
+Output ONLY the markdown body — no fences, no preamble.

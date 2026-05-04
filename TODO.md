@@ -161,57 +161,58 @@
 
 ---
 
-## Phase 5 — `spec` Command
+## Phase 5 — `spec` Command ✅
 
-### 5.1 Core 8 секций
+### 5.1 Core 8 секций ✅
 
-- [ ] `src/application/SpecService.ts` с методами: `generateExecutiveSummary`, `generateProductRequirements`, `generateSystemArchitecture`, `generateDetailedDesign`, `generateQualityAttributes`, `generateTestingStrategy`, `generateDeploymentOps`, `generateImplementationPlan`
+- ✅ `src/application/SpecService.ts` с методами: `generateExecutiveSummary`, `generateProductRequirements`, `generateSystemArchitecture`, `generateDetailedDesign`, `generateQualityAttributes`, `generateTestingStrategy`, `generateDeploymentOps`, `generateImplementationPlan`
 
-### 5.2 Extended секции (arc42 / IEEE 29148)
+### 5.2 Extended секции (arc42 / IEEE 29148) ✅
 
-- [ ] Stakeholders & Personas
-- [ ] Glossary (auto-build из `requirements.json` + код)
-- [ ] C4 Context (L1) — авто из `integrations[]` (каждый INT-* = внешний узел)
-- [ ] C4 Container (L2)
-- [ ] C4 Component (L3) — для ключевых контейнеров
-- [ ] Domain Model — Mermaid class diagram
-- [ ] Data Model — ER + миграции
-- [ ] API Contracts — refs к OpenAPI/AsyncAPI
-- [ ] Integrations Catalog — таблица + ссылка на `INTEGRATIONS.md`
-- [ ] Key Sequence Diagrams (Mermaid)
-- [ ] ADR Log
-- [ ] Risks Register (Likelihood × Impact × Mitigation × Owner)
-- [ ] SLA / SLO / SLI
-- [ ] Observability Plan (logs / metrics / traces / alerts / dashboards)
-- [ ] Capacity & Scaling
-- [ ] Cost Model
-- [ ] Disaster Recovery (RTO / RPO / runbook)
-- [ ] Migration & Rollback
-- [ ] Change Management (canary / blue-green / feature flags)
-- [ ] Traceability Matrix (FR → design → test → код)
+- ✅ Stakeholders & Personas
+- ✅ Glossary (auto-build из `requirements.json`)
+- ✅ C4 Context (L1) — авто из `integrations[]` (каждый INT-* = внешний узел)
+- ✅ C4 Container (L2) — Claude prompt + Mermaid validator
+- ✅ C4 Component (L3) — Claude prompt + Mermaid validator
+- ✅ Domain Model — Mermaid class diagram (auto from aggregates)
+- ✅ Data Model — Claude narrative + ER fallback из aggregates
+- ✅ API Contracts — Claude narrative + refs к интеграциям
+- ✅ Integrations Catalog — таблица + ссылка на `INTEGRATIONS.md`
+- ✅ Key Sequence Diagrams (Mermaid; Claude per feature, fallback на default)
+- ✅ ADR Log
+- ✅ Risks Register (Likelihood × Impact × Mitigation × Owner)
+- ✅ SLA / SLO / SLI
+- ✅ Observability Plan (logs / metrics / traces / alerts / dashboards)
+- ✅ Capacity & Scaling
+- ✅ Cost Model
+- ✅ Disaster Recovery (RTO / RPO / runbook)
+- ✅ Migration & Rollback
+- ✅ Change Management (canary / blue-green / feature flags)
+- ✅ Traceability Matrix (FR → AC → integrations)
 
-### 5.3 Diagram generation
+### 5.3 Diagram generation ✅
 
-- [ ] `generateDiagram(kind)` — kinds: `c4-context | c4-container | c4-component | domain | er | sequence | bpmn | broker-topology`
-- [ ] Валидация Mermaid синтаксиса до записи (через `@mermaid-js/parser` или CLI)
-- [ ] Re-prompt при невалидном Mermaid (max 2 попытки), иначе — `<!-- TODO: human review -->`
-- [ ] BPMN — через `BpmnImporter` (если уже есть `.bpmn`) или генерация Claude
+- ✅ `generateDiagram(kind)` — kinds: `c4-context | c4-container | c4-component | domain | er | sequence | broker-topology` (BPMN — отложено: BPMN-XML импортится через `BpmnImporter`, а не рендерится из аггрегатов)
+- ✅ Валидация Mermaid синтаксиса (`MermaidValidator`: header whitelist + balanced-brackets — без новых deps)
+- ✅ Re-prompt при невалидном Mermaid (default 2 попытки), иначе — `%% TODO: human review` маркер
+- ✅ Sanitize-pass над финальным markdown'ом — невалидные блоки помечаются `<!-- TODO: human review -->`
 
-### 5.4 Skipped & placeholders
+### 5.4 Skipped & placeholders ✅
 
-- [ ] Default: пропущенные секции исключаются
-- [ ] `--placeholders` флаг → рендерить `> ⏭ Section skipped — run \`sdd add <topic>\`...`
+- ✅ Default: пропущенные секции исключаются (`status: 'skipped'` → markdown пустой)
+- ✅ `--placeholders` флаг → рендерить `> ⏭ Section skipped — run sdd add <topic>...` через `placeholder.hbs`
 
-### 5.5 Output
+### 5.5 Output ✅
 
-- [ ] Default output: `docs/SDD.md`
-- [ ] `sdd integrations spec` пишет `docs/INTEGRATIONS.md` отдельно
-- [ ] В основной SDD — только сводная таблица + ссылка на `INTEGRATIONS.md`
+- ✅ Default output: `docs/SDD.md` (`DEFAULTS.outputSddFile`)
+- ✅ `sdd integrations spec` пишет `docs/INTEGRATIONS.md` отдельно (Phase 4.5)
+- ✅ В основной SDD — сводная таблица интеграций + ссылка на `INTEGRATIONS.md`
 
-### 5.6 Tests
+### 5.6 Tests ✅
 
-- [ ] `tests/integration/SpecService.test.ts` — fixtures `requirements.json` + `integrations.json`, проверка наличия каждой секции
-- [ ] Golden tests: эталонные SDD на demo-проектах (`loan-service`, `simple-cli-tool`, `event-platform`)
+- ✅ `tests/integration/SpecService.test.ts` — fixtures + проверка всех 14 секций, skipped/placeholders, custom outputPath, generateDiagram dispatch
+- ✅ `tests/unit/MermaidValidator.test.ts`, `tests/unit/MermaidDiagramBuilder.test.ts`
+- [ ] Golden tests: эталонные SDD на demo-проектах (`loan-service`, `simple-cli-tool`, `event-platform`) — отложено
 
 ---
 

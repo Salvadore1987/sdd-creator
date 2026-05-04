@@ -1,0 +1,5 @@
+Produce a markdown body (no top-level heading) for **Disaster Recovery**. Cover RTO, RPO, backup strategy, restore drills, multi-region/AZ posture, runbook entry points.
+
+Project: {{config.metadata.name}}
+Stateful integrations: {{#each statefulIntegrations}}{{this.id}} {{this.name}} ({{this.category}}); {{/each}}
+NFRs touching reliability: {{#each reliabilityNfrs}}{{this.id}}: {{this.measurableTarget}}; {{/each}}

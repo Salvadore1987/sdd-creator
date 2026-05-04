@@ -1,0 +1,11 @@
+## 12. Risks Register
+
+{{#if requirements.risks.length}}
+| ID | Title | Likelihood | Impact | Mitigation | Owner |
+| --- | --- | --- | --- | --- | --- |
+{{#each requirements.risks}}
+| {{this.id}} | {{this.title}} | {{this.likelihood}} | {{this.impact}} | {{this.mitigation}} | {{#if this.owner}}{{this.owner}}{{else}}—{{/if}} |
+{{/each}}
+{{else}}
+_No risks captured. Add via `sdd add risk`._
+{{/if}}
