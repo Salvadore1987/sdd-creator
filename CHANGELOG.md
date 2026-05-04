@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial pre-release packaging — `LICENSE` (MIT), `CONTRIBUTING.md`, `CHANGELOG.md`, `repository` / `homepage` / `bugs` URLs in `package.json`.
 - `npm publish --dry-run` workflow documented in `CONTRIBUTING.md` (release flow).
+- ADRs `docs/adr/ADR-001` … `ADR-005` covering hexagonal architecture, Handlebars, Commander, Zod, and the dual-provider abstraction; `docs/adr/README.md` index.
+- `sdd integrations spec --format html|pdf|confluence` (with `--export-path`) — closes the only outstanding Phase 5.7 deferral.
+- `tests/integration/InitMatrix.test.ts` — exhaustive 5×5 stack × architecture init matrix (25 cases).
+- `tests/integration/LoanServiceLintSmoke.test.ts` — DoD lint check: 0 errors on the bundled `loan-service` fixture.
+- `tests/integration/Arc42Coverage.test.ts` — DoD arc42 check: rendered SDD contains all 12 anchor sections.
+- `tests/integration/IntegrationsSpecFormat.test.ts` — covers the new `integrations spec --format` wiring.
 
 ## [0.1.0] — 2026-05-04
 

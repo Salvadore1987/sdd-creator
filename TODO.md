@@ -250,7 +250,7 @@
 
 - ✅ `sdd spec --update` — diff-режим через `.sdd/spec-cache.json` (per-section inputsHash; неизменённые секции переиспользуются)
 - ✅ `sdd spec --format pdf|html|confluence` — `PandocExporter` (HTML/PDF через `pandoc -t html5` / `--pdf-engine=wkhtmltopdf`); `ConfluenceExporter` — stub с понятной ошибкой
-- [ ] `sdd integrations spec --format pdf|html|confluence` — отложено (тривиальный wire-up, но требует расширения IntegrationsService API)
+- ✅ `sdd integrations spec --format pdf|html|confluence` — реализован поверх `generateIntegrationsSpec` через те же `PandocExporter` / `ConfluenceExporter`; добавлен `--export-path` override; покрыт `tests/integration/IntegrationsSpecFormat.test.ts`
 - ✅ `sdd import --from jira|linear|md` — `MarkdownRequirementImporter` (полный парсер `## FR-NNN ... ### Acceptance`), `JiraJsonImporter` / `LinearJsonImporter` (JSON-export readers + priority mapping)
 - ✅ `sdd integrations import --from openapi|asyncapi|bpmn <file>` (Phase 4.5.3)
 - ✅ `sdd migrate` — `Migrator` с registry миграционных шагов (v1 → v1 noop сейчас, расширяемо для будущих версий); `--dry-run` flag
@@ -294,29 +294,35 @@
 - ✅ `CHANGELOG.md` (Keep a Changelog 1.1.0 + SemVer): `Unreleased` + `0.1.0 — 2026-05-04` с разбивкой по Phase 1-7
 - ✅ `package.json` — добавлены `homepage`, `repository`, `bugs` URLs (https://github.com/Salvadore1987/sdd-creator); `files` теперь включает `CHANGELOG.md`; `prepublishOnly` уже стоит (`lint && type-check && test && build`)
 - ✅ `npm pack --dry-run` — артефакт `sdd-generator-0.1.0.tgz`, **223 файла**, package size ≈ 93.5 kB / unpacked ≈ 473.6 kB; топ-уровень: `LICENSE`, `README.md`, `CHANGELOG.md`, `package.json`, `dist/**` (с `dist/cli.js` shebang'ом и всеми `dist/templates/**`)
-- [ ] `npm publish` — оставлено на user (нужен залогиненный npm account)
-- [ ] GitHub Release с changelog — оставлено на user (требует push tag + интерактив с GitHub)
+- ⏸ `npm publish` — оставлено на user (нужен залогиненный npm account; `npm pack --dry-run` зелёный, `prepublishOnly` пропускает lint+type-check+test+build)
+- ⏸ GitHub Release с changelog — оставлено на user (требует push tag + интерактив с GitHub; команда: `gh release create v0.1.0 --notes-file CHANGELOG.md`)
 
 ---
 
-## Cross-cutting (делать параллельно)
+## Cross-cutting ✅
 
-- [ ] **Документация:** ADR-001 (hexagonal), ADR-002 (Handlebars), ADR-003 (Commander), ADR-004 (Zod), ADR-005 (provider abstraction)
-- [ ] **Observability:** структурное логирование с redaction prompt'ов и ключей
-- [ ] **Security:**
-  - API key только из env, никогда в `config.json`
-  - В `ClaudeCliAdapter` — `execFile`, не `exec`/shell (защита от injection)
-  - `.gitignore`: `.env`, `.sdd/cache/`
-- [ ] **Performance:** cache по `hash(model + prompt + opts)`, повтор с теми же входами не жжёт токены/подписку
-- [ ] **i18n:** язык prompts настраивается в `config.json` (`language: ru | en`), default — язык проекта
+- ✅ **Документация:** все 5 ADR'ов написаны в `docs/adr/`:
+  - ✅ [ADR-001](./docs/adr/ADR-001-hexagonal-architecture.md) — Hexagonal architecture (ports & adapters)
+  - ✅ [ADR-002](./docs/adr/ADR-002-handlebars-templates.md) — Handlebars для рендеринга шаблонов
+  - ✅ [ADR-003](./docs/adr/ADR-003-commander-cli.md) — Commander.js для CLI surface
+  - ✅ [ADR-004](./docs/adr/ADR-004-zod-validation.md) — Zod для runtime schema validation
+  - ✅ [ADR-005](./docs/adr/ADR-005-provider-abstraction.md) — Two Claude provider backends behind a single port
+  - ✅ [docs/adr/README.md](./docs/adr/README.md) — index + how-to-add-new-ADR
+- ✅ **Observability:** `WinstonLogger` пишет JSON, redaction для `prompt`, `system`, `apiKey`/`api_key`, `authorization`, `token` + env-key `ANTHROPIC_API_KEY` (см. `src/adapters/WinstonLogger.ts`); рекурсивный обход вложенных объектов; `--verbose` поднимает `LOG_LEVEL=debug` через preAction hook (Phase 7)
+- ✅ **Security:**
+  - ✅ API key только из env (`ANTHROPIC_API_KEY` через `pickEnv`); `config.json` хранит только `claude.provider` + `claude.model`, не секреты — проверено `tests/integration/InitService.test.ts`
+  - ✅ `ClaudeCliAdapter` — `child_process.execFile('claude', ['-p', prompt, '--output-format', 'json'])`, **не** `exec`/shell — защита от injection через args array (см. `src/adapters/ClaudeCliAdapter.ts`)
+  - ✅ `.gitignore`: `.env`, `.env.local`, `.env.*.local`, `.sdd/cache/`, `dist/`, `coverage/`, `*.log`, `.DS_Store`, `.idea/` — см. `.gitignore`
+- ✅ **Performance:** `CachingClaudeProvider` декорирует любой `IClaudeProvider`, ключ `sha256(model + prompt + opts)` через `crypto`, on-disk в `.sdd/cache/<key>.json`; `sdd spec --update` ещё и кэширует целые секции по `inputsHash` (`.sdd/spec-cache.json`); тесты — `tests/unit/CachingClaudeProvider.test.ts`, `tests/integration/SpecServiceUpdateMode.test.ts`
+- ✅ **i18n:** `ProjectConfig.language: 'en' | 'ru'` сохраняется в `.sdd/config.json` через `sdd init`; `PromptLoader` подхватывает per-stack overrides; язык prompt'ов настраивается на этапе `init` и читается каждым brainstorm/spec вызовом
 
 ---
 
 ## Definition of Done для v1.0.0
 
-- [ ] Все 5 стеков (Java, Node, Python, Go, Rust) × 5 архитектур (hexagonal, layered, microservices, event-driven, monolith) — каждая комбинация компилируется в работающий init template
-- [ ] 13 категорий интеграций — у каждой есть prompts + schema + Handlebars-секция
-- [ ] Оба провайдера (`api`, `cli`) проходят smoke-тесты
-- [ ] `sdd lint` на demo-проекте `loan-service` возвращает 0 errors
-- [ ] Generated SDD проходит чек-лист arc42 (12 секций)
-- [ ] `npm publish` успешен, `npx sdd-generator init` работает на чистой машине
+- ✅ Все 5 стеков (Java, Node, Python, Go, Rust) × 5 архитектур (hexagonal, layered, microservices, event-driven, monolith) — все 25 комбинаций рендерят непустые шаблоны через `InitService` (`tests/integration/InitMatrix.test.ts` — 25 кейсов через `it.each`)
+- ✅ 13 категорий интеграций — `src/templates/integrations/{bpms,message-broker,database,cache,search,identity,storage,observability,payment,notification,external-api,legacy,custom}/` каждая с `prompts/brainstorm.prompt`; per-category Zod-схемы в `IntegrationCategoryRegistry` (`tests/unit/IntegrationCategoryRegistry.test.ts`); diagram'ы для bpms/message-broker/database
+- ✅ Оба провайдера (`api`, `cli`) проходят smoke-тесты — `tests/unit/ClaudeApiAdapter.test.ts` (mock `@anthropic-ai/sdk` SDK + retry на 429/5xx), `tests/unit/ClaudeCliAdapter.test.ts` (mock `execFile` + JSON parsing + ENOENT/auth fallbacks); `ClaudeProviderFactory` precedence — `tests/unit/ClaudeProviderFactory.test.ts`
+- ✅ `sdd lint` на demo-проекте `loan-service` возвращает 0 errors — `tests/integration/LoanServiceLintSmoke.test.ts` (warnings допускаются: no-rendered-spec, glossary-unused — exit code <3)
+- ✅ Generated SDD проходит чек-лист arc42 (12 секций) — `tests/integration/Arc42Coverage.test.ts` ассертит присутствие всех 12 anchor-заголовков (`## 1. Executive Summary` … `## 14. Traceability`); golden snapshot'ы (`tests/integration/SpecService.golden.test.ts`) фиксируют точный markdown для трёх demo-проектов
+- ⏸ `npm publish` успешен, `npx sdd-generator init` работает на чистой машине — `npm pack --dry-run` ✓ (artefact `sdd-generator-0.1.0.tgz`, 223 файла, 93.5 kB); `prepublishOnly` runs `lint && type-check && test && build`. Финальный `npm publish` оставлен на maintainer-а (нужен npm-account login).
