@@ -23,12 +23,30 @@
 
 ## Quick install
 
+> ⚠️ Пакет ещё **не опубликован в npm** (v0.1.0 — release candidate). `npm install -g sdd-generator` пока не работает. До публикации устанавливать из исходников:
+
 ```bash
-npm install -g sdd-generator
+git clone https://github.com/Salvadore1987/sdd-creator.git
+cd sdd-creator
+npm install
+npm run build       # компилирует TypeScript + копирует templates → dist/, делает dist/cli.js исполняемым
+npm link            # регистрирует `sdd` и `sdd-generator` глобально (PATH)
 sdd --help
 ```
 
-> До первого релиза: `git clone … && npm install && npm link`.
+После публикации (см. [Roadmap](#roadmap)) будет работать обычный `npm install -g sdd-generator`.
+
+**Альтернативы без `npm link`:**
+
+```bash
+# Через npx из локального tarball
+npm pack
+npm install -g ./sdd-generator-0.1.0.tgz
+
+# Или напрямую (без глобальной установки)
+node ./dist/cli.js --help
+./dist/cli.js --help    # после `npm run build` файл уже executable
+```
 
 ### Выбор Claude provider
 

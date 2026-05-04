@@ -21,3 +21,11 @@ function copyDir(src, dest) {
 
 copyDir(SRC_TEMPLATES, DIST_TEMPLATES);
 console.log('Templates copied to dist/templates');
+
+// Make the CLI entrypoint executable so `node dist/cli.js` and direct
+// invocation work without npm's bin-link auto-chmod.
+const CLI_ENTRY = path.join(__dirname, '..', 'dist', 'cli.js');
+if (fs.existsSync(CLI_ENTRY)) {
+  fs.chmodSync(CLI_ENTRY, 0o755);
+  console.log('Made dist/cli.js executable (0o755)');
+}
