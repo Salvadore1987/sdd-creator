@@ -271,14 +271,15 @@
 
 ---
 
-## Phase 7 — CLI Integration
+## Phase 7 — CLI Integration ✅
 
-- [ ] `src/cli.ts` — корневая Commander-программа
-- [ ] Глобальные опции: `--verbose` (LOG_LEVEL=debug), `--provider <api|cli>`, `--help`, `--version`
-- [ ] Регистрация команд: `init`, `brainstorm [topic]`, `integrations <sub>`, `spec`, `lint`, `status`, `add <topic>`, `edit <topic>`, `remove <topic>`, `import`, `migrate`
-- [ ] Кастомные error classes → exit codes: 0 success, 1 generic error, 2 validation/lint, 3 provider error
-- [ ] `--verbose` печатает stack traces; иначе — actionable user-facing messages
-- [ ] `src/index.ts` — public API exports для использования как библиотека
+- ✅ `src/cli.ts` — корневая Commander-программа: `buildProgram()` factory + `main(argv)` async entry, top-level catch вызывает `handleCliError`, `if (require.main === module)` shim для запуска из `dist/cli.js`
+- ✅ Глобальные опции: `--verbose` (preAction hook ставит `LOG_LEVEL=debug`), `--provider <cli|api>` (preAction ставит `SDD_CLAUDE_PROVIDER`), `--help`, `--version`
+- ✅ Регистрация команд: `init`, `brainstorm`, `integrations`, `spec`, `status`, `add`, `edit`, `remove`, `lint`, `import`, `migrate` — все 11 sub-команд проверены тестом `tests/integration/cli.program.test.ts`
+- ✅ Кастомные error classes (`src/cli/errors.ts`): `SddCliError` (base) → `ValidationError` (2) / `LintFailedError` (2) / `ProviderInvocationError` (3) / `FileSystemError` (4); `EXIT_CODES = {success:0, generic:1, validation:2, provider:3, filesystem:4}`. `classifyError()` мапит порт-уровневые ошибки (`ClaudeCliNotInstalledError`, `ClaudeCliAuthError`, `ClaudeApiAuthError`, `ClaudeProviderError`, `FileNotFoundError`, `PermissionError`, `JsonParseError`, ZodError) → CLI-уровневые с готовыми hint-ами (e.g. "Run: claude login", "Run `sdd init`...")
+- ✅ `--verbose` печатает stack traces; без флага — `✖ <message>` + `→ <hint>` + подсказка `(run with --verbose for stack trace)`. `lint.command` теперь бросает `LintFailedError` вместо `process.exit`, чтобы вошло в общий error handler
+- ✅ `src/index.ts` — public API: domain models, application services (Init/Brainstorm/Spec/Lint/Status/IntegrationsService/RequirementsItemService), adapters (FileRepository/HandlebarsTemplateEngine/WinstonLogger/Claude*), все ports + port errors, CLI surface (`SddCliError`, `EXIT_CODES`, `classifyError`, `handleCliError`, `buildProgram`, `main`)
+- ✅ Tests: `tests/unit/cli/errors.test.ts` (19 cases — exit codes, all classify branches, ZodError-name detection), `tests/unit/cli/handler.test.ts` (5 cases — output format, verbose stack), `tests/integration/cli.program.test.ts` (3 cases — command surface, --verbose hook, --provider hook)
 
 ---
 
