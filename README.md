@@ -3,8 +3,6 @@
 > Spec-anchored development driver, powered by Claude.
 > CLI, который превращает разговор о фиче в полноценный **Software Design Document** по arc42 / IEEE 29148 — с диаграммами, ADR, traceability и каталогом интеграций.
 
-> ✅ **Статус: v0.1.0 — release candidate.** Все 8 фаз + cross-cutting + Definition of Done закрыты в коде и тестах. Готовы: `sdd init` (+ `--industry fintech|healthcare|e-commerce`), `sdd brainstorm <topic>` (10 этапов), `sdd integrations <list|show|add|edit|remove|validate|import|spec --format html\|pdf\|confluence>` (13 категорий + OpenAPI/AsyncAPI/BPMN импортёры), `sdd spec` (14 секций arc42/IEEE 29148, авто-Mermaid + валидация, `--update` diff-mode + `--format html|pdf|confluence` через pandoc), `sdd status`, `sdd add|edit|remove <topic>`, `sdd add feature|adr|risk|integration`, `sdd lint` (+`--strict`, `--warnings-as-errors`), `sdd import --from md|jira|linear`, `sdd migrate`. Глобальные опции `--verbose` / `--provider <cli\|api>`. Унифицированные exit codes 0/1/2/3/4. Public API в `src/index.ts`. ADRs 001-005 в `docs/adr/`. Тестовое покрытие: **49 suites / 252 tests / 3 snapshot'а** (gates: domain ≥90%, adapters ≥75%, application ≥85%, utils ≥95%). DoD smoke-тесты: 5×5 init matrix, loan-service `lint = 0 errors`, 12-section arc42 coverage, оба провайдера. `npm pack --dry-run` собирает `sdd-generator-0.1.0.tgz` (~93.5 kB, 223 файла). LICENSE / CONTRIBUTING / CHANGELOG (Keep a Changelog) на месте. Остался единственный manual-шаг — `npm publish` + GitHub Release (нужен залогиненный npm account и `gh release create v0.1.0 --notes-file CHANGELOG.md`).
-
 ---
 
 ## Зачем
