@@ -1,0 +1,667 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SpecService golden — event-platform renders deterministic SDD matching snapshot 1`] = `
+"# event-platform — Software Design Document
+
+> Stack: **go** · Architecture: **event-driven** · Language: **en**
+> Generated: 2026-05-04T00:00:00.000Z
+
+Event-driven order delivery
+
+## 1. Executive Summary
+
+**Problem.** Order events must reach the warehouse within 1 second
+
+**Goals**
+
+- Sub-second event delivery
+
+**Key Performance Indicators**
+
+- p99 < 1s end-to-end
+
+NARRATIVE
+
+
+## 2. Stakeholders & Personas
+
+| ID | Name | Role | Influence | Responsibilities |
+| --- | --- | --- | --- | --- |
+| SH-001 | Logistics lead | owner | high | delivery SLAs |
+
+
+## 3. Product Requirements
+
+**Constraints**
+
+- At-least-once delivery
+
+
+### 3.1 Functional Requirements
+
+#### FR-001 — Publish OrderPlaced
+
+- **Priority:** must
+- **Description:** Emit OrderPlaced when an order is accepted
+- **Uses integrations:** INT-001
+
+**Acceptance criteria**
+
+- **AC-FR-001-1** — _Given_ an accepted order _When_ it is committed _Then_ an OrderPlaced event is published to INT-001
+
+
+
+## 4. Quality Attributes (NFR)
+
+| ID | Category | Statement | Measurable target | Verification |
+| --- | --- | --- | --- | --- |
+| NFR-001 | performance | Event delivery is fast | \`p99 < 1s\` | — |
+
+NARRATIVE
+
+
+## 5. Glossary
+
+| Term | Definition | Synonyms | Related |
+| --- | --- | --- | --- |
+| **Order** | A customer purchase request | — | — |
+
+
+## 6. System Architecture
+
+> Architectural style: **event-driven** · primary stack: **go**.
+
+NARRATIVE
+
+### 6.1 C4 Context (L1)
+
+\`\`\`mermaid
+C4Context
+  title System Context — event-platform
+  Person(user, "User", "Primary actor of the system")
+  System(event_platform, "event-platform", "Event-driven order delivery")
+  Rel(user, event_platform, "uses")
+  System_Ext(INT_001, "Kafka (message-broker)", "Order event bus")
+  Rel(event_platform, INT_001, "message-broker")
+\`\`\`
+
+### 6.2 C4 Container (L2)
+
+\`\`\`mermaid
+C4Container
+  Person(u, "User", "actor")
+  Container(api, "API", "stack")
+  Rel(u, api, "uses")
+\`\`\`
+
+### 6.3 C4 Component (L3)
+
+\`\`\`mermaid
+C4Component
+  Component(svc, "Service", "core")
+\`\`\`
+
+
+## 7. Detailed Design
+
+### 7.1 Domain Model
+
+- **Order** _(context: Sales)_ — Order aggregate root
+  - Entities: Order, LineItem
+  - Value objects: Money
+  - Events: OrderPlaced, OrderCancelled
+
+\`\`\`mermaid
+classDiagram
+  class Order {
+    +Order
+    +LineItem
+    -Money
+  }
+  class OrderPlaced
+  Order ..> OrderPlaced : emits
+  class OrderCancelled
+  Order ..> OrderCancelled : emits
+\`\`\`
+
+### 7.2 Data Model
+
+NARRATIVE
+
+### 7.3 API Contracts
+
+NARRATIVE
+
+### 7.4 Integrations Catalog
+
+| ID | Category | Name | Purpose |
+| --- | --- | --- | --- |
+| INT-001 | message-broker | Kafka | Order event bus |
+
+> Full catalog: see [\`INTEGRATIONS.md\`](./INTEGRATIONS.md).
+
+
+### 7.6 Key Sequence Diagrams
+
+#### FR-001 — Publish OrderPlaced
+
+\`\`\`mermaid
+sequenceDiagram
+  User->>Service: action
+  Service-->>User: ok
+\`\`\`
+
+
+
+## 8. Testing Strategy
+
+NARRATIVE
+
+
+## 9. Deployment & Operations
+
+NARRATIVE
+
+### 9.1 SLA / SLO / SLI
+
+NARRATIVE
+
+### 9.2 Observability Plan
+
+NARRATIVE
+
+### 9.3 Capacity & Scaling
+
+NARRATIVE
+
+### 9.4 Cost Model
+
+NARRATIVE
+
+### 9.5 Disaster Recovery
+
+NARRATIVE
+
+### 9.6 Migration & Rollback
+
+NARRATIVE
+
+### 9.7 Change Management
+
+NARRATIVE
+
+
+## 10. Implementation Plan
+
+NARRATIVE
+
+
+## 11. Architecture Decision Records
+
+_No ADRs recorded. Add via \`sdd add adr\`._
+
+
+## 12. Risks Register
+
+_No risks captured. Add via \`sdd add risk\`._
+
+
+## 13. Compliance & Security
+
+_No compliance requirements captured. Run \`sdd brainstorm compliance\`._
+
+
+## 14. Traceability Matrix
+
+| Feature | Title | Acceptance Criteria | Integrations |
+| --- | --- | --- | --- |
+| FR-001 | Publish OrderPlaced | AC-FR-001-1 | INT-001 |
+
+"
+`;
+
+exports[`SpecService golden — loan-service renders deterministic SDD matching snapshot 1`] = `
+"# loan-service — Software Design Document
+
+> Stack: **java** · Architecture: **hexagonal** · Language: **en**
+> Generated: 2026-05-04T00:00:00.000Z
+
+Origination and underwriting platform
+
+## 1. Executive Summary
+
+**Problem.** Underwriting takes 3+ days; we want sub-5-minute decisions for prime applicants.
+
+**Goals**
+
+- Onboard 10k applicants in year-1
+- Decision in <5 minutes for prime
+
+**Key Performance Indicators**
+
+- p95 decision latency < 5min
+- Manual review rate < 20%
+
+NARRATIVE
+
+
+## 2. Stakeholders & Personas
+
+| ID | Name | Role | Influence | Responsibilities |
+| --- | --- | --- | --- | --- |
+| SH-001 | Lending CTO | sponsor | high | budget; scope |
+| SH-002 | Risk officer | compliance | medium | policy |
+
+
+## 3. Product Requirements
+
+**Constraints**
+
+- GDPR
+- PCI-DSS
+
+**Out of scope**
+
+- No mobile app in v1
+- No co-applicants in v1
+
+### 3.1 Functional Requirements
+
+#### FR-001 — Submit application
+
+- **Priority:** must
+- **Description:** Customer submits a loan application via web
+- **Uses integrations:** INT-002
+
+**Acceptance criteria**
+
+- **AC-FR-001-1** — _Given_ an authenticated customer _When_ they submit a complete application _Then_ a record is persisted and INT-002 is queried
+
+#### FR-002 — Auto-decision prime applicants
+
+- **Priority:** must
+- **Description:** Decisions for prime credit scores are automated
+- **Uses integrations:** INT-001, INT-002
+
+**Acceptance criteria**
+
+- **AC-FR-002-1** — _Given_ a prime applicant _When_ the bureau returns a score _Then_ an approval is emitted to INT-001
+
+
+
+## 4. Quality Attributes (NFR)
+
+| ID | Category | Statement | Measurable target | Verification |
+| --- | --- | --- | --- | --- |
+| NFR-001 | performance | Application API responds quickly | \`p95 < 200ms @ 100 RPS\` | — |
+| NFR-002 | reliability | Service is highly available | \`99.9% uptime, RTO 15m, RPO 5m\` | — |
+
+NARRATIVE
+
+
+## 5. Glossary
+
+| Term | Definition | Synonyms | Related |
+| --- | --- | --- | --- |
+| **Application** | A request for a loan | — | — |
+| **Underwriting** | The risk assessment of an application | — | — |
+
+
+## 6. System Architecture
+
+> Architectural style: **hexagonal** · primary stack: **java**.
+
+NARRATIVE
+
+### 6.1 C4 Context (L1)
+
+\`\`\`mermaid
+C4Context
+  title System Context — loan-service
+  Person(user, "User", "Primary actor of the system")
+  System(loan_service, "loan-service", "Origination and underwriting platform")
+  Rel(user, loan_service, "uses")
+  System_Ext(INT_001, "Camunda 8 (bpms)", "Loan origination workflow")
+  Rel(loan_service, INT_001, "bpms")
+  System_Ext(INT_002, "Bureau API (external-api)", "Credit lookup")
+  Rel(loan_service, INT_002, "external-api")
+  System_Ext(INT_003, "PostgreSQL (database)", "Application of record")
+  Rel(loan_service, INT_003, "database")
+\`\`\`
+
+### 6.2 C4 Container (L2)
+
+\`\`\`mermaid
+C4Container
+  Person(u, "User", "actor")
+  Container(api, "API", "stack")
+  Rel(u, api, "uses")
+\`\`\`
+
+### 6.3 C4 Component (L3)
+
+\`\`\`mermaid
+C4Component
+  Component(svc, "Service", "core")
+\`\`\`
+
+
+## 7. Detailed Design
+
+### 7.1 Domain Model
+
+- **LoanApplication** _(context: Origination)_ — Aggregate root for an application
+  - Entities: Application, Applicant
+  - Value objects: Money
+  - Events: ApplicationSubmitted, ApplicationApproved
+
+\`\`\`mermaid
+classDiagram
+  class LoanApplication {
+    +Application
+    +Applicant
+    -Money
+  }
+  class ApplicationSubmitted
+  LoanApplication ..> ApplicationSubmitted : emits
+  class ApplicationApproved
+  LoanApplication ..> ApplicationApproved : emits
+\`\`\`
+
+### 7.2 Data Model
+
+NARRATIVE
+
+### 7.3 API Contracts
+
+NARRATIVE
+
+### 7.4 Integrations Catalog
+
+| ID | Category | Name | Purpose |
+| --- | --- | --- | --- |
+| INT-001 | bpms | Camunda 8 | Loan origination workflow |
+| INT-002 | external-api | Bureau API | Credit lookup |
+| INT-003 | database | PostgreSQL | Application of record |
+
+> Full catalog: see [\`INTEGRATIONS.md\`](./INTEGRATIONS.md).
+
+### 7.5 Workflow (BPMN)
+
+\`\`\`mermaid
+flowchart LR
+  subgraph INT_001["Camunda 8"]
+    INT_001_p_loanOrigination([loanOrigination])
+    INT_001_t_scoreApplicant["scoreApplicant (service)"]
+    INT_001_u_manualUnderwriting{{"manualUnderwriting (user)"}}
+  end
+\`\`\`
+
+### 7.6 Key Sequence Diagrams
+
+#### FR-001 — Submit application
+
+\`\`\`mermaid
+sequenceDiagram
+  User->>Service: action
+  Service-->>User: ok
+\`\`\`
+
+#### FR-002 — Auto-decision prime applicants
+
+\`\`\`mermaid
+sequenceDiagram
+  User->>Service: action
+  Service-->>User: ok
+\`\`\`
+
+
+
+## 8. Testing Strategy
+
+NARRATIVE
+
+
+## 9. Deployment & Operations
+
+NARRATIVE
+
+### 9.1 SLA / SLO / SLI
+
+NARRATIVE
+
+### 9.2 Observability Plan
+
+NARRATIVE
+
+### 9.3 Capacity & Scaling
+
+NARRATIVE
+
+### 9.4 Cost Model
+
+NARRATIVE
+
+### 9.5 Disaster Recovery
+
+NARRATIVE
+
+### 9.6 Migration & Rollback
+
+NARRATIVE
+
+### 9.7 Change Management
+
+NARRATIVE
+
+
+## 10. Implementation Plan
+
+NARRATIVE
+
+
+## 11. Architecture Decision Records
+
+### ADR-001 — Use hexagonal architecture
+
+- **Status:** \`accepted\` _(created 2026-05-04)_
+
+**Context.** We need testable domain logic
+
+**Decision.** Adopt ports and adapters
+
+**Consequences.** Adapters must be thin
+
+**Alternatives considered:** layered
+**Related:** FR-001
+
+
+
+## 12. Risks Register
+
+| ID | Title | Likelihood | Impact | Mitigation | Owner |
+| --- | --- | --- | --- | --- | --- |
+| RISK-001 | Bureau outage blocks underwriting | medium | high | Fallback to cached scores; circuit breaker | platform |
+
+
+## 13. Compliance & Security
+
+- PII encrypted at rest with KMS
+- Audit log for every decision
+
+
+## 14. Traceability Matrix
+
+| Feature | Title | Acceptance Criteria | Integrations |
+| --- | --- | --- | --- |
+| FR-001 | Submit application | AC-FR-001-1 | INT-002 |
+| FR-002 | Auto-decision prime applicants | AC-FR-002-1 | INT-001, INT-002 |
+
+"
+`;
+
+exports[`SpecService golden — simple-cli-tool renders deterministic SDD matching snapshot 1`] = `
+"# simple-cli-tool — Software Design Document
+
+> Stack: **node** · Architecture: **monolith** · Language: **en**
+> Generated: 2026-05-04T00:00:00.000Z
+
+A small CLI utility
+
+## 3. Product Requirements
+
+**Constraints**
+
+- Node 20+
+
+**Out of scope**
+
+- No GUI
+
+### 3.1 Functional Requirements
+
+#### FR-001 — Convert JSON to YAML
+
+- **Priority:** must
+- **Description:** Read a JSON file and emit YAML on stdout
+
+**Acceptance criteria**
+
+- **AC-FR-001-1** — _Given_ a valid JSON file _When_ the CLI is invoked with --input _Then_ YAML is written to stdout
+
+
+
+## 4. Quality Attributes (NFR)
+
+| ID | Category | Statement | Measurable target | Verification |
+| --- | --- | --- | --- | --- |
+| NFR-001 | performance | Conversion is fast | \`<100ms for 10MB inputs\` | — |
+
+NARRATIVE
+
+
+## 6. System Architecture
+
+> Architectural style: **monolith** · primary stack: **node**.
+
+NARRATIVE
+
+### 6.1 C4 Context (L1)
+
+\`\`\`mermaid
+C4Context
+  title System Context — simple-cli-tool
+  Person(user, "User", "Primary actor of the system")
+  System(simple_cli_tool, "simple-cli-tool", "A small CLI utility")
+  Rel(user, simple_cli_tool, "uses")
+\`\`\`
+
+### 6.2 C4 Container (L2)
+
+\`\`\`mermaid
+C4Container
+  Person(u, "User", "actor")
+  Container(api, "API", "stack")
+  Rel(u, api, "uses")
+\`\`\`
+
+### 6.3 C4 Component (L3)
+
+\`\`\`mermaid
+C4Component
+  Component(svc, "Service", "core")
+\`\`\`
+
+
+## 7. Detailed Design
+
+### 7.1 Domain Model
+
+_No bounded contexts captured. Run \`sdd brainstorm domain\`._
+
+### 7.2 Data Model
+
+NARRATIVE
+
+### 7.3 API Contracts
+
+NARRATIVE
+
+### 7.4 Integrations Catalog
+
+_No integrations registered. Use \`sdd integrations add\`._
+
+
+### 7.6 Key Sequence Diagrams
+
+#### FR-001 — Convert JSON to YAML
+
+\`\`\`mermaid
+sequenceDiagram
+  User->>Service: action
+  Service-->>User: ok
+\`\`\`
+
+
+
+## 8. Testing Strategy
+
+NARRATIVE
+
+
+## 9. Deployment & Operations
+
+NARRATIVE
+
+### 9.1 SLA / SLO / SLI
+
+NARRATIVE
+
+### 9.2 Observability Plan
+
+NARRATIVE
+
+### 9.3 Capacity & Scaling
+
+NARRATIVE
+
+### 9.4 Cost Model
+
+NARRATIVE
+
+### 9.5 Disaster Recovery
+
+NARRATIVE
+
+### 9.6 Migration & Rollback
+
+NARRATIVE
+
+### 9.7 Change Management
+
+NARRATIVE
+
+
+## 10. Implementation Plan
+
+NARRATIVE
+
+
+## 11. Architecture Decision Records
+
+_No ADRs recorded. Add via \`sdd add adr\`._
+
+
+## 12. Risks Register
+
+_No risks captured. Add via \`sdd add risk\`._
+
+
+## 14. Traceability Matrix
+
+| Feature | Title | Acceptance Criteria | Integrations |
+| --- | --- | --- | --- |
+| FR-001 | Convert JSON to YAML | AC-FR-001-1 | — |
+
+"
+`;

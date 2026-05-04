@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "stakeholders": {
+    "state": { "status": "completed", "updatedAt": "2026-05-04T00:00:00.000Z" },
+    "items": [{ "id": "SH-001", "name": "Logistics lead", "role": "owner", "responsibilities": ["delivery SLAs"], "influence": "high" }]
+  },
+  "context": {
+    "state": { "status": "completed", "updatedAt": "2026-05-04T00:00:00.000Z" },
+    "statement": "Order events must reach the warehouse within 1 second",
+    "goals": ["Sub-second event delivery"],
+    "kpis": ["p99 < 1s end-to-end"]
+  },
+  "constraints": { "state": { "status": "completed" }, "items": ["At-least-once delivery"] },
+  "glossary": {
+    "state": { "status": "completed" },
+    "terms": [{ "term": "Order", "definition": "A customer purchase request" }]
+  },
+  "features": {
+    "state": { "status": "completed" },
+    "items": [
+      {
+        "id": "FR-001",
+        "title": "Publish OrderPlaced",
+        "description": "Emit OrderPlaced when an order is accepted",
+        "priority": "must",
+        "acceptanceCriteria": [
+          { "id": "AC-FR-001-1", "given": "an accepted order", "when": "it is committed", "then": "an OrderPlaced event is published to INT-001" }
+        ],
+        "usesIntegrations": ["INT-001"]
+      }
+    ]
+  },
+  "domain": {
+    "state": { "status": "completed" },
+    "aggregates": [
+      {
+        "name": "Order",
+        "boundedContext": "Sales",
+        "description": "Order aggregate root",
+        "entities": ["Order", "LineItem"],
+        "valueObjects": ["Money"],
+        "events": ["OrderPlaced", "OrderCancelled"]
+      }
+    ]
+  },
+  "quality": {
+    "state": { "status": "completed" },
+    "nfrs": [
+      { "id": "NFR-001", "category": "performance", "statement": "Event delivery is fast", "measurableTarget": "p99 < 1s" }
+    ]
+  },
+  "dependencies": { "state": { "status": "completed" }, "integrationRefs": ["INT-001"] },
+  "anti": { "state": { "status": "completed" }, "items": [] },
+  "compliance": { "state": { "status": "completed" }, "items": [] },
+  "adrs": [],
+  "risks": []
+}

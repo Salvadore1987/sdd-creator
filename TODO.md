@@ -192,7 +192,7 @@
 
 ### 5.3 Diagram generation ✅
 
-- ✅ `generateDiagram(kind)` — kinds: `c4-context | c4-container | c4-component | domain | er | sequence | broker-topology` (BPMN — отложено: BPMN-XML импортится через `BpmnImporter`, а не рендерится из аггрегатов)
+- ✅ `generateDiagram(kind)` — kinds: `c4-context | c4-container | c4-component | domain | er | sequence | bpmn | broker-topology` (BPMN: `MermaidDiagramBuilder.bpmnFlow()` рендерит processes / serviceTasks / userTasks из bpms-интеграций; `BpmnImporter` отдельно импортит .bpmn-XML в каталог интеграций)
 - ✅ Валидация Mermaid синтаксиса (`MermaidValidator`: header whitelist + balanced-brackets — без новых deps)
 - ✅ Re-prompt при невалидном Mermaid (default 2 попытки), иначе — `%% TODO: human review` маркер
 - ✅ Sanitize-pass над финальным markdown'ом — невалидные блоки помечаются `<!-- TODO: human review -->`
@@ -212,7 +212,7 @@
 
 - ✅ `tests/integration/SpecService.test.ts` — fixtures + проверка всех 14 секций, skipped/placeholders, custom outputPath, generateDiagram dispatch
 - ✅ `tests/unit/MermaidValidator.test.ts`, `tests/unit/MermaidDiagramBuilder.test.ts`
-- [ ] Golden tests: эталонные SDD на demo-проектах (`loan-service`, `simple-cli-tool`, `event-platform`) — отложено
+- ✅ Golden tests: эталонные SDD на demo-проектах (`tests/integration/SpecService.golden.test.ts` со снапшотами для `loan-service`, `simple-cli-tool`, `event-platform`; фикстуры в `tests/fixtures/demo-projects/<project>/{config,requirements,integrations}.json`)
 
 ---
 

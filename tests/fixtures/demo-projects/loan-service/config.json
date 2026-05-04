@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "metadata": { "name": "loan-service", "description": "Origination and underwriting platform" },
+  "stack": "java",
+  "architecture": "hexagonal",
+  "language": "en",
+  "technologies": ["Spring Boot 3", "PostgreSQL", "Camunda 8"],
+  "claude": { "provider": "cli" },
+  "createdAt": "2026-05-04T00:00:00.000Z",
+  "updatedAt": "2026-05-04T00:00:00.000Z"
+}

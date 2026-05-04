@@ -51,7 +51,15 @@ _No API contracts referenced. Import OpenAPI/AsyncAPI specs via `sdd integration
 _No integrations registered. Use `sdd integrations add`._
 {{/if}}
 
-### 7.5 Key Sequence Diagrams
+{{#if bpmnDiagram}}
+### 7.5 Workflow (BPMN)
+
+```mermaid
+{{bpmnDiagram}}
+```
+{{/if}}
+
+### 7.6 Key Sequence Diagrams
 
 {{#if sequenceDiagrams.length}}
 {{#each sequenceDiagrams}}

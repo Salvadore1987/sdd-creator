@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "integrations": [
+    {
+      "id": "INT-001",
+      "category": "bpms",
+      "name": "Camunda 8",
+      "purpose": "Loan origination workflow",
+      "endpoints": [{ "name": "gateway", "protocol": "grpc", "url": "zeebe://camunda:26500" }],
+      "auth": { "mode": "oauth2", "secretsRef": "vault://camunda/sa" },
+      "extra": {
+        "engine": "camunda-8",
+        "processes": ["loanOrigination"],
+        "jobWorkers": ["scoreApplicant"],
+        "sagas": ["manualUnderwriting"]
+      }
+    },
+    {
+      "id": "INT-002",
+      "category": "external-api",
+      "name": "Bureau API",
+      "purpose": "Credit lookup",
+      "endpoints": [{ "name": "rest", "protocol": "https", "url": "https://bureau.test" }],
+      "auth": { "mode": "apiKey", "secretsRef": "vault://bureau/key" },
+      "extra": {
+        "protocol": "rest",
+        "operations": ["GET /score"]
+      }
+    },
+    {
+      "id": "INT-003",
+      "category": "database",
+      "name": "PostgreSQL",
+      "purpose": "Application of record",
+      "endpoints": [{ "name": "primary", "protocol": "postgres", "url": "postgres://pg:5432" }],
+      "auth": { "mode": "iam", "secretsRef": "vault://pg/iam" },
+      "extra": { "engine": "postgres", "schemaSnippet": "applications(id uuid pk, ...)" }
+    }
+  ]
+}

@@ -87,6 +87,43 @@ export class MermaidDiagramBuilder {
     return lines.join('\n');
   }
 
+  public bpmnFlow(bpmsIntegrations: readonly Integration[]): string {
+    if (bpmsIntegrations.length === 0) {
+      return 'flowchart LR\n  A[no BPMS integrations]';
+    }
+    const lines: string[] = ['flowchart LR'];
+    for (const integration of bpmsIntegrations) {
+      const root = TOKEN(integration.id);
+      const extra = (integration.extra ?? {}) as {
+        readonly processes?: readonly string[];
+        readonly jobWorkers?: readonly string[];
+        readonly sagas?: readonly string[];
+      };
+      lines.push(`  subgraph ${root}["${SAFE(integration.name)}"]`);
+      const processes = extra.processes ?? [];
+      const tasks = extra.jobWorkers ?? [];
+      const userTasks = extra.sagas ?? [];
+      if (processes.length === 0 && tasks.length === 0 && userTasks.length === 0) {
+        lines.push(`    ${root}_default[no processes captured]`);
+      } else {
+        for (const process of processes) {
+          const node = `${root}_p_${TOKEN(process)}`;
+          lines.push(`    ${node}([${SAFE(process)}])`);
+        }
+        for (const task of tasks) {
+          const node = `${root}_t_${TOKEN(task)}`;
+          lines.push(`    ${node}["${SAFE(task)} (service)"]`);
+        }
+        for (const userTask of userTasks) {
+          const node = `${root}_u_${TOKEN(userTask)}`;
+          lines.push(`    ${node}{{"${SAFE(userTask)} (user)"}}`);
+        }
+      }
+      lines.push('  end');
+    }
+    return lines.join('\n');
+  }
+
   public defaultSequence(feature: Requirement, integrations: readonly Integration[]): string {
     const lines: string[] = ['sequenceDiagram'];
     lines.push('  participant User');

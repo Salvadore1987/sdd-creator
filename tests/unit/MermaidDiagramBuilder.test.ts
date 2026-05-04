@@ -68,6 +68,33 @@ describe('MermaidDiagramBuilder', () => {
     expect(validator.validate(diagram).valid).toBe(true);
   });
 
+  it('produces a valid BPMN flow with processes / service tasks / user tasks', () => {
+    // arrange
+    const builder = new MermaidDiagramBuilder();
+    const integrations = [
+      makeIntegration({
+        id: 'INT-009',
+        category: 'bpms',
+        name: 'Camunda',
+        extra: {
+          processes: ['loanOrigination'],
+          jobWorkers: ['Score applicant'],
+          sagas: ['Manual underwriting'],
+        },
+      }),
+    ];
+
+    // act
+    const diagram = builder.bpmnFlow(integrations);
+
+    // assert
+    expect(diagram.startsWith('flowchart')).toBe(true);
+    expect(diagram).toContain('loanOrigination');
+    expect(diagram).toContain('Score applicant');
+    expect(diagram).toContain('Manual underwriting');
+    expect(validator.validate(diagram).valid).toBe(true);
+  });
+
   it('emits a deterministic default sequence diagram from a feature', () => {
     // arrange
     const builder = new MermaidDiagramBuilder();

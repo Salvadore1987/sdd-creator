@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "stakeholders": {
+    "state": { "status": "completed", "updatedAt": "2026-05-04T00:00:00.000Z" },
+    "items": [
+      { "id": "SH-001", "name": "Lending CTO", "role": "sponsor", "responsibilities": ["budget", "scope"], "influence": "high" },
+      { "id": "SH-002", "name": "Risk officer", "role": "compliance", "responsibilities": ["policy"], "influence": "medium" }
+    ]
+  },
+  "context": {
+    "state": { "status": "completed", "updatedAt": "2026-05-04T00:00:00.000Z" },
+    "statement": "Underwriting takes 3+ days; we want sub-5-minute decisions for prime applicants.",
+    "goals": ["Onboard 10k applicants in year-1", "Decision in <5 minutes for prime"],
+    "kpis": ["p95 decision latency < 5min", "Manual review rate < 20%"]
+  },
+  "constraints": { "state": { "status": "completed" }, "items": ["GDPR", "PCI-DSS"] },
+  "glossary": {
+    "state": { "status": "completed" },
+    "terms": [
+      { "term": "Application", "definition": "A request for a loan" },
+      { "term": "Underwriting", "definition": "The risk assessment of an application" }
+    ]
+  },
+  "features": {
+    "state": { "status": "completed" },
+    "items": [
+      {
+        "id": "FR-001",
+        "title": "Submit application",
+        "description": "Customer submits a loan application via web",
+        "priority": "must",
+        "acceptanceCriteria": [
+          { "id": "AC-FR-001-1", "given": "an authenticated customer", "when": "they submit a complete application", "then": "a record is persisted and INT-002 is queried" }
+        ],
+        "usesIntegrations": ["INT-002"]
+      },
+      {
+        "id": "FR-002",
+        "title": "Auto-decision prime applicants",
+        "description": "Decisions for prime credit scores are automated",
+        "priority": "must",
+        "acceptanceCriteria": [
+          { "id": "AC-FR-002-1", "given": "a prime applicant", "when": "the bureau returns a score", "then": "an approval is emitted to INT-001" }
+        ],
+        "usesIntegrations": ["INT-001", "INT-002"]
+      }
+    ]
+  },
+  "domain": {
+    "state": { "status": "completed" },
+    "aggregates": [
+      {
+        "name": "LoanApplication",
+        "boundedContext": "Origination",
+        "description": "Aggregate root for an application",
+        "entities": ["Application", "Applicant"],
+        "valueObjects": ["Money"],
+        "events": ["ApplicationSubmitted", "ApplicationApproved"]
+      }
+    ]
+  },
+  "quality": {
+    "state": { "status": "completed" },
+    "nfrs": [
+      { "id": "NFR-001", "category": "performance", "statement": "Application API responds quickly", "measurableTarget": "p95 < 200ms @ 100 RPS" },
+      { "id": "NFR-002", "category": "reliability", "statement": "Service is highly available", "measurableTarget": "99.9% uptime, RTO 15m, RPO 5m" }
+    ]
+  },
+  "dependencies": { "state": { "status": "completed" }, "integrationRefs": ["INT-001", "INT-002", "INT-003"] },
+  "anti": { "state": { "status": "completed" }, "items": ["No mobile app in v1", "No co-applicants in v1"] },
+  "compliance": { "state": { "status": "completed" }, "items": ["PII encrypted at rest with KMS", "Audit log for every decision"] },
+  "adrs": [
+    {
+      "id": "ADR-001",
+      "title": "Use hexagonal architecture",
+      "status": "accepted",
+      "context": "We need testable domain logic",
+      "decision": "Adopt ports and adapters",
+      "consequences": "Adapters must be thin",
+      "alternatives": ["layered"],
+      "relatedRequirements": ["FR-001"],
+      "createdAt": "2026-05-04T00:00:00.000Z"
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Bureau outage blocks underwriting",
+      "description": "Underwriting depends on credit bureau",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Fallback to cached scores; circuit breaker",
+      "owner": "platform"
+    }
+  ]
+}

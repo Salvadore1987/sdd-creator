@@ -26,6 +26,7 @@ export type DiagramKind =
   | 'domain'
   | 'er'
   | 'sequence'
+  | 'bpmn'
   | 'broker-topology';
 
 export interface SpecGenerateOptions {
@@ -201,11 +202,14 @@ export class SpecService {
       sequenceDiagrams.push({ title: `${feature.id} — ${feature.title}`, diagram: generated });
     }
     const domainDiagram = this.diagrams.domainClass(ctx.requirements.domain.aggregates);
+    const bpmsIntegrations = this.byCategory(ctx.integrations, 'bpms');
+    const bpmnDiagram = bpmsIntegrations.length > 0 ? this.diagrams.bpmnFlow(bpmsIntegrations) : '';
     const markdown = await this.renderTemplate('detailed-design.hbs', {
       requirements: ctx.requirements,
       integrations: ctx.integrations,
       hasOpenApi: ctx.integrations.some((i) => i.category === 'external-api'),
       domainDiagram,
+      bpmnDiagram,
       dataModelNarrative,
       apiContractsNarrative,
       sequenceDiagrams,
@@ -299,6 +303,8 @@ export class SpecService {
         return this.diagrams.erFromAggregates(ctx.requirements.domain.aggregates);
       case 'broker-topology':
         return this.diagrams.brokerTopology(this.byCategory(ctx.integrations, 'message-broker'));
+      case 'bpmn':
+        return this.diagrams.bpmnFlow(this.byCategory(ctx.integrations, 'bpms'));
       case 'c4-container':
       case 'c4-component':
       case 'sequence':

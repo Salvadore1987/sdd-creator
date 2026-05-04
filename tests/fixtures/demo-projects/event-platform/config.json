@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "metadata": { "name": "event-platform", "description": "Event-driven order delivery" },
+  "stack": "go",
+  "architecture": "event-driven",
+  "language": "en",
+  "technologies": ["Go 1.22", "Kafka", "Postgres"],
+  "claude": { "provider": "cli" },
+  "createdAt": "2026-05-04T00:00:00.000Z",
+  "updatedAt": "2026-05-04T00:00:00.000Z"
+}
