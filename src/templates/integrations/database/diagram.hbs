@@ -1,0 +1,13 @@
+```mermaid
+erDiagram
+    APP ||--|{ DB_PRIMARY : "writes"
+    DB_PRIMARY ||--o{ DB_REPLICA : "{{integration.extra.replication}}"
+```
+
+{{#if integration.extra.schemaSnippet}}
+**Schema outline:**
+
+```
+{{integration.extra.schemaSnippet}}
+```
+{{/if}}

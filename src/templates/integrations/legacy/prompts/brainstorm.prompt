@@ -1,0 +1,35 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+Help register a legacy system integration (SOAP, mainframe, fixed-format files).
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Schema:
+{
+  "name": string,
+  "vendor": string,
+  "purpose": string,
+  "endpoints": [{ "name": string, "protocol": string, "url": string }],
+  "slaTargets": { "availability": string, "latencyP95Ms": number },
+  "auth": { "mode": string, "secretsRef": string },
+  "errorHandling": string,
+  "rateLimits": string,
+  "observability": string,
+  "versioning": string,
+  "extra": {
+    "protocol": string,    // "SOAP", "MQ", "SFTP", "FIX", ...
+    "format": string,      // "WSDL", "EBCDIC fixed", ...
+    "notes": string
+  }
+}
+
+Constraints:
+- Do NOT include "id".
+- Note brittleness, change-management cadence, downtime windows.
+
+Return JSON only.

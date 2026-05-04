@@ -1,0 +1,34 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+You are building the ubiquitous language (DDD glossary) for the SDD.
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Existing terms already captured ({{requirements.glossary.terms.length}}):
+{{#each requirements.glossary.terms}}
+- {{this.term}} — {{this.definition}}
+{{/each}}
+
+Schema:
+{
+  "terms": [
+    {
+      "term":         string,
+      "definition":   string,
+      "synonyms":     string[]   // optional
+      "relatedTerms": string[]   // optional
+    }
+  ]
+}
+
+Constraints:
+- Each term must be a domain noun (avoid generic CS terms like "service", "client").
+- Definitions must be concise (1–2 sentences) and unambiguous to a new joiner.
+- Do NOT repeat terms already listed above (case-insensitive).
+
+Return JSON only.

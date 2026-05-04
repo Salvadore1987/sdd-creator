@@ -1,0 +1,36 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+You are drafting non-functional requirements (NFRs) for the SDD.
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Existing NFRs already captured ({{requirements.quality.nfrs.length}}):
+{{#each requirements.quality.nfrs}}
+- {{this.id}} ({{this.category}}): {{this.statement}} → {{this.measurableTarget}}
+{{/each}}
+
+Schema:
+{
+  "nfrs": [
+    {
+      "category":          "performance" | "reliability" | "security" | "usability"
+                            | "maintainability" | "portability" | "observability" | "compliance",
+      "statement":         string,
+      "measurableTarget":  string,
+      "verificationMethod": string   // optional — how it will be checked
+    }
+  ]
+}
+
+Constraints:
+- Do NOT include "id" — IDs are assigned by the tool (NFR-NNN).
+- "measurableTarget" MUST be measurable (e.g., "P95 latency < 200ms at 1000 RPS",
+  "RTO 15m / RPO 5m", "no critical CVEs older than 30 days"). Avoid vague words.
+- Cover at least: performance, reliability, security, observability where applicable.
+
+Return JSON only.

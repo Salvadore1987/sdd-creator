@@ -1,0 +1,30 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+You are drafting security & compliance requirements for the SDD.
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Existing compliance items ({{requirements.compliance.items.length}}):
+{{#each requirements.compliance.items}}
+- {{this}}
+{{/each}}
+
+Schema:
+{
+  "items": string[]   // each entry is one short sentence describing a compliance/security requirement
+}
+
+Constraints to consider:
+- Data classification & residency (GDPR, data sovereignty)
+- AuthN/AuthZ (OAuth2/OIDC, MFA, RBAC/ABAC)
+- Audit logging, retention, immutability
+- Encryption at rest and in transit
+- Vulnerability management (SBOM, CVE response SLA)
+- Industry-specific (PCI-DSS, HIPAA, SOX) if applicable
+
+Do NOT repeat items already listed above. Return JSON only.

@@ -1,0 +1,30 @@
+Project: {{config.metadata.name}} ({{stack}} / {{architecture}})
+Doc language: {{language}}
+
+You are helping draft the project context for the SDD.
+Return ONLY a JSON object — no Markdown fences, no prose.
+
+User input:
+"""
+{{extra.userDescription}}
+"""
+
+Existing context:
+- statement: {{requirements.context.statement}}
+- goals: {{#each requirements.context.goals}}{{this}}; {{/each}}
+- kpis: {{#each requirements.context.kpis}}{{this}}; {{/each}}
+
+Schema:
+{
+  "statement": string,        // optional — concise problem statement (1–3 sentences)
+  "goals":     string[],      // optional — 3–7 outcome-focused goals
+  "kpis":      string[]       // optional — measurable KPIs with thresholds where possible
+}
+
+Constraints:
+- "statement" should describe the problem, not the solution.
+- "goals" must be outcomes (e.g., "reduce manual onboarding time"), not features.
+- "kpis" must be measurable (e.g., "P95 onboarding time < 30s"); avoid vague targets.
+- Do NOT echo existing values verbatim; refine them if the user input warrants.
+
+Return JSON only.

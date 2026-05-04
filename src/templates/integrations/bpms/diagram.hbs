@@ -1,0 +1,10 @@
+```mermaid
+flowchart LR
+    user[User]
+    api[Application]
+    bpms[{{integration.name}}]
+    user --> api --> bpms
+{{#each integration.extra.processes}}
+    bpms --> p_{{@index}}["Process: {{this}}"]
+{{/each}}
+```
