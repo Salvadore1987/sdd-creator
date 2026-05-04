@@ -283,18 +283,19 @@
 
 ---
 
-## Phase 8 — Build & Package
+## Phase 8 — Build & Package ✅ (готов к публикации; сам `npm publish` оставлен на usera)
 
-- [ ] `npm run build` — компиляция в `dist/`, копирование `templates/` и `prompts/` (assets pipeline)
-- [ ] `.npmignore` — исключить `tests/`, `src/`, `coverage/`, `.sdd/`
-- [ ] `bin` указывает на `dist/cli.js` с shebang
-- [ ] `README.md` уже есть — финальный review перед публикацией
-- [ ] `LICENSE` (MIT)
-- [ ] `CONTRIBUTING.md` — basic flow
-- [ ] `CHANGELOG.md` (Keep a Changelog)
-- [ ] `npm publish --dry-run` → проверить содержимое
-- [ ] `npm publish`
-- [ ] GitHub Release с changelog
+- ✅ `npm run build` — компиляция в `dist/` через `tsconfig.build.json` + `scripts/copy-assets.js` копирует `src/templates/**` (stacks / architectures / integrations / spec / base) в `dist/templates/`
+- ✅ `.npmignore` — `src/`, `tests/`, `coverage/`, `.sdd/`, `.github/`, `scripts/`, `docs/`, `*.tsbuildinfo`, eslint/prettier/jest configs, `TODO.md` / `SDD_CREATOR.md` / `CLAUDE.md` / `CONTRIBUTING.md`, `.env*`, `*.tgz`, `.idea/` / `.vscode/`
+- ✅ `bin: { sdd, sdd-generator } → dist/cli.js`; shebang `#!/usr/bin/env node` сохраняется через TypeScript (первая строка `src/cli.ts` копируется как есть)
+- ✅ `README.md` — финальный review: статус-баннер обновлён до "Phase 8 готова", команды и опции описаны, секция "Выбор Claude provider" актуальна
+- ✅ `LICENSE` (MIT, copyright 2026 Eldar Sagitov)
+- ✅ `CONTRIBUTING.md` — quick start, project layout (hexagonal layers), coding conventions (no `var`, constructor injection, stable IDs, AAA), test gates таблица, PR flow, integration/importer extension recipes, release flow для maintainers
+- ✅ `CHANGELOG.md` (Keep a Changelog 1.1.0 + SemVer): `Unreleased` + `0.1.0 — 2026-05-04` с разбивкой по Phase 1-7
+- ✅ `package.json` — добавлены `homepage`, `repository`, `bugs` URLs (https://github.com/Salvadore1987/sdd-creator); `files` теперь включает `CHANGELOG.md`; `prepublishOnly` уже стоит (`lint && type-check && test && build`)
+- ✅ `npm pack --dry-run` — артефакт `sdd-generator-0.1.0.tgz`, **223 файла**, package size ≈ 93.5 kB / unpacked ≈ 473.6 kB; топ-уровень: `LICENSE`, `README.md`, `CHANGELOG.md`, `package.json`, `dist/**` (с `dist/cli.js` shebang'ом и всеми `dist/templates/**`)
+- [ ] `npm publish` — оставлено на user (нужен залогиненный npm account)
+- [ ] GitHub Release с changelog — оставлено на user (требует push tag + интерактив с GitHub)
 
 ---
 
