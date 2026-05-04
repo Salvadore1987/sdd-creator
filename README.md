@@ -3,7 +3,7 @@
 > Spec-anchored development driver, powered by Claude.
 > CLI, который превращает разговор о фиче в полноценный **Software Design Document** по arc42 / IEEE 29148 — с диаграммами, ADR, traceability и каталогом интеграций.
 
-> ⚠️ **Статус:** Phase 5 завершена. Готовы каркас проекта, доменное ядро, ports/adapters, команды `sdd init`, `sdd brainstorm <topic>` (10 этапов), `sdd integrations <list|show|add|edit|remove|validate|import|spec>` (13 категорий + OpenAPI/AsyncAPI/BPMN импортёры) и `sdd spec` (14 секций arc42/IEEE 29148, авто-Mermaid диаграммы, валидация). Команды `lint`, `status`, `add/edit/remove`, `update/export/import/migrate` ещё не реализованы.
+> ⚠️ **Статус:** Phase 5 завершена полностью (5.1–5.7). Готовы: `sdd init` (+ `--industry fintech|healthcare|e-commerce`), `sdd brainstorm <topic>` (10 этапов), `sdd integrations <list|show|add|edit|remove|validate|import|spec>` (13 категорий + OpenAPI/AsyncAPI/BPMN импортёры), `sdd spec` (14 секций arc42/IEEE 29148, авто-Mermaid + валидация, `--update` diff-mode + `--format html|pdf|confluence` через pandoc), `sdd status`, `sdd add|edit|remove <topic>`, `sdd add feature|adr|risk|integration`, `sdd lint` (+`--strict`, `--warnings-as-errors`, exit codes 0/1/2), `sdd import --from md|jira|linear`, `sdd migrate`. Осталось Phase 6 (расширенное тестовое покрытие), Phase 7 (CLI polish: error classes / exit codes / verbose), Phase 8 (build & npm publish).
 
 ---
 

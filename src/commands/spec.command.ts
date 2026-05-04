@@ -4,6 +4,8 @@ import { Command } from 'commander';
 
 import { CachingClaudeProvider } from '../adapters/CachingClaudeProvider';
 import { ClaudeProviderFactory } from '../adapters/ClaudeProviderFactory';
+import { ConfluenceExporter } from '../adapters/exporters/ConfluenceExporter';
+import { PandocExporter } from '../adapters/exporters/PandocExporter';
 import { FileRepository } from '../adapters/FileRepository';
 import { HandlebarsTemplateEngine } from '../adapters/HandlebarsTemplateEngine';
 import { WinstonLogger } from '../adapters/WinstonLogger';
@@ -14,6 +16,7 @@ import { ClaudeApiAuthError } from '../ports/errors';
 import type { IClaudeProvider } from '../ports/IClaudeProvider';
 import type { IFileRepository } from '../ports/IFileRepository';
 import type { ILogger } from '../ports/ILogger';
+import type { ExportFormat, ISpecExporter } from '../ports/ISpecExporter';
 import type { ITemplateEngine } from '../ports/ITemplateEngine';
 import { applyEnvDefaults, pickEnv } from '../utils/config';
 import { DEFAULTS } from '../utils/constants';
@@ -25,6 +28,8 @@ export interface SpecCommandOptions {
   readonly update?: boolean;
   readonly providerOverride?: ClaudeProviderKind;
   readonly templatesRoot?: string;
+  readonly format?: ExportFormat;
+  readonly exportPath?: string;
 }
 
 export interface SpecCommandDeps {
@@ -63,7 +68,37 @@ export async function runSpec(
   });
 
   printSummary(result);
+
+  if (options.format !== undefined) {
+    const exporter = pickExporter(options.format);
+    const exportPath = options.exportPath ?? deriveExportPath(result.outputPath, options.format);
+    await exporter.export({ markdown: result.markdown, outputPath: exportPath });
+    console.log(`✔ Exported ${options.format.toUpperCase()} → ${exportPath}`);
+  }
+
   return result;
+}
+
+function pickExporter(format: ExportFormat): ISpecExporter {
+  switch (format) {
+    case 'html':
+    case 'pdf':
+      return new PandocExporter(format);
+    case 'confluence':
+      return new ConfluenceExporter();
+  }
+}
+
+function deriveExportPath(sddPath: string, format: ExportFormat): string {
+  const base = sddPath.replace(/\.md$/i, '');
+  switch (format) {
+    case 'html':
+      return `${base}.html`;
+    case 'pdf':
+      return `${base}.pdf`;
+    case 'confluence':
+      return `${base}.confluence`;
+  }
 }
 
 async function buildClaudeProvider(
@@ -114,13 +149,25 @@ export function buildSpecCommand(): Command {
     .description('Generate the SDD markdown document from collected requirements + integrations')
     .option('-o, --output <file>', 'Output file path (default: docs/SDD.md)')
     .option('--placeholders', 'Render placeholders for skipped sections instead of omitting them')
-    .option('--update', 'Re-render only sections whose inputs changed')
-    .action(async (opts: { output?: string; placeholders?: boolean; update?: boolean }) => {
-      await runSpec({
-        ...(opts.output !== undefined ? { outputPath: opts.output } : {}),
-        ...(opts.placeholders !== undefined ? { placeholders: opts.placeholders } : {}),
-        ...(opts.update !== undefined ? { update: opts.update } : {}),
-      });
-    });
+    .option('--update', 'Re-render only sections whose inputs changed (uses .sdd/spec-cache.json)')
+    .option('--format <kind>', 'Post-process to additional format: html | pdf | confluence')
+    .option('--export-path <file>', 'Custom output path for the exported format')
+    .action(
+      async (opts: {
+        output?: string;
+        placeholders?: boolean;
+        update?: boolean;
+        format?: string;
+        exportPath?: string;
+      }) => {
+        await runSpec({
+          ...(opts.output !== undefined ? { outputPath: opts.output } : {}),
+          ...(opts.placeholders !== undefined ? { placeholders: opts.placeholders } : {}),
+          ...(opts.update !== undefined ? { update: opts.update } : {}),
+          ...(opts.format !== undefined ? { format: opts.format as ExportFormat } : {}),
+          ...(opts.exportPath !== undefined ? { exportPath: opts.exportPath } : {}),
+        });
+      },
+    );
   return cmd;
 }

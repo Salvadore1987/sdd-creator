@@ -216,44 +216,46 @@
 
 ---
 
-## Phase 5.5 — Skip & Resume / Status / Add / Edit / Remove
+## Phase 5.5 — Skip & Resume / Status / Add / Edit / Remove ✅
 
-- [ ] `sdd status` — таблица: что completed / skipped / stale, со ссылками на команды
-- [ ] `sdd add <topic>` — запуск интерактива одного этапа
-- [ ] `sdd add feature` / `add adr` / `add risk` — гранулярные добавления одной записи
-- [ ] `sdd edit <topic>` — перезапуск интерактива поверх существующих данных
-- [ ] `sdd remove <topic>` — вернуть в `skipped`
-- [ ] `sdd add integration [--category <cat>]` — алиас на `integrations add`
-- [ ] Tests: unit + integration на каждую под-команду
-
----
-
-## Phase 5.6 — `lint`
-
-- [ ] `sdd lint` (default) — warnings + errors
-- [ ] `sdd lint --strict` — падает на skipped секциях
-- [ ] Проверки:
-  - [ ] FR без acceptance criteria → error
-  - [ ] NFR без measurable target → error
-  - [ ] Все ID разрешаются (`FR-099` в ADR не должен указывать в пустоту) → error
-  - [ ] Mermaid blocks парсятся → error
-  - [ ] Glossary terms используются в тексте → warning
-  - [ ] Skipped sections → warning (или error в strict)
-  - [ ] INT без `secretsRef` → warning
-  - [ ] Coverage по чек-листу arc42 (12 секций) → error в strict
-- [ ] Exit code: 0 / 1 (errors) / 2 (warnings only — для CI с `--warnings-as-errors`)
+- ✅ `sdd status` — таблица completed/skipped/stale + counts + nextCommand (`StatusService` + `--json` mode)
+- ✅ `sdd add <topic>` — алиас на `sdd brainstorm <topic>` через `lifecycle.command.ts`
+- ✅ `sdd add feature` / `add adr` / `add risk` — гранулярные добавления через `RequirementsItemService` (FR-NNN/ADR-NNN/RISK-NNN авто-IDs, JSON payload через `--input`)
+- ✅ `sdd edit <topic>` — re-run brainstorm поверх существующих данных
+- ✅ `sdd remove <topic>` — `sdd brainstorm <topic> --skip` под капотом
+- ✅ `sdd add integration [--category <cat>]` — алиас на `integrations add` (через `--input`)
+- ✅ Tests: `tests/integration/StatusService.test.ts`, `tests/integration/RequirementsItemService.test.ts`
 
 ---
 
-## Phase 5.7 — Update mode / Export / Import / Migrate
+## Phase 5.6 — `lint` ✅
 
-- [ ] `sdd spec --update` — diff-режим: регенерит только секции с изменившимся хэшем входов
-- [ ] `sdd spec --format pdf|html|confluence` (post-process через `pandoc` / Confluence REST API)
-- [ ] `sdd integrations spec --format pdf|html|confluence`
-- [ ] `sdd import --from jira|linear|md` — подтянуть FR из внешних трекеров
-- [ ] `sdd integrations import --from openapi|asyncapi|bpmn <file>`
-- [ ] `sdd migrate` — миграция между `schemaVersion` (CLI обнаруживает разрыв и предлагает migrate)
-- [ ] Industry templates — `--industry fintech|healthcare|e-commerce` пред-NFR + compliance вопросы
+- ✅ `sdd lint` (default) — warnings + errors через `LintService` + `CompletenessLinter`
+- ✅ `sdd lint --strict` — skipped секции и arc42-coverage становятся errors
+- ✅ Проверки:
+  - ✅ FR без acceptance criteria → error (`fr-without-ac`)
+  - ✅ NFR без measurable target → error (`nfr-without-target`)
+  - ✅ Все ID разрешаются → error (`unresolved-reference`)
+  - ✅ Mermaid blocks парсятся → error (`mermaid-invalid`, через `MermaidValidator.extractFenced` + validate)
+  - ✅ Glossary terms используются в тексте → warning (`glossary-unused`)
+  - ✅ Skipped sections → warning (или error в strict)
+  - ✅ INT без `secretsRef` → warning (`integration-missing-secrets-ref`)
+  - ✅ Coverage по чек-листу arc42 (10 секций) → error в strict
+- ✅ Exit code: 0 / 1 (errors) / 2 (warnings only); `--warnings-as-errors` промоутит 2→1
+- ✅ Tests: `tests/integration/LintService.test.ts` (5 cases)
+
+---
+
+## Phase 5.7 — Update mode / Export / Import / Migrate ✅
+
+- ✅ `sdd spec --update` — diff-режим через `.sdd/spec-cache.json` (per-section inputsHash; неизменённые секции переиспользуются)
+- ✅ `sdd spec --format pdf|html|confluence` — `PandocExporter` (HTML/PDF через `pandoc -t html5` / `--pdf-engine=wkhtmltopdf`); `ConfluenceExporter` — stub с понятной ошибкой
+- [ ] `sdd integrations spec --format pdf|html|confluence` — отложено (тривиальный wire-up, но требует расширения IntegrationsService API)
+- ✅ `sdd import --from jira|linear|md` — `MarkdownRequirementImporter` (полный парсер `## FR-NNN ... ### Acceptance`), `JiraJsonImporter` / `LinearJsonImporter` (JSON-export readers + priority mapping)
+- ✅ `sdd integrations import --from openapi|asyncapi|bpmn <file>` (Phase 4.5.3)
+- ✅ `sdd migrate` — `Migrator` с registry миграционных шагов (v1 → v1 noop сейчас, расширяемо для будущих версий); `--dry-run` flag
+- ✅ Industry templates — `init --industry fintech|healthcare|e-commerce` пре-заполняет `compliance.items` (PCI-DSS / HIPAA / GDPR-CCPA presets)
+- ✅ Tests: `tests/unit/Migrator.test.ts`, `tests/unit/RequirementImporters.test.ts`, `tests/integration/SpecServiceUpdateMode.test.ts`
 
 ---
 

@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import * as path from 'path';
 
 import type { ConfigManager } from '../domain/ConfigManager';
@@ -65,6 +66,13 @@ export interface SpecServiceOptions {
   readonly diagramRetries?: number;
 }
 
+interface SpecCacheEntry {
+  readonly inputsHash: string;
+  readonly title: string;
+  readonly status: SpecSectionResult['status'];
+  readonly markdown: string;
+}
+
 interface SectionContext {
   readonly config: ProjectConfig;
   readonly requirements: RequirementsDocument;
@@ -110,27 +118,49 @@ export class SpecService {
     const generatedAt = new Date().toISOString();
     const header = await this.renderTemplate('header.hbs', { config, generatedAt });
 
-    const sectionFns: ReadonlyArray<() => Promise<SpecSectionResult>> = [
-      () => this.generateExecutiveSummary(ctx),
-      () => this.generateStakeholders(ctx),
-      () => this.generateProductRequirements(ctx),
-      () => this.generateQualityAttributes(ctx),
-      () => this.generateGlossary(ctx),
-      () => this.generateSystemArchitecture(ctx),
-      () => this.generateDetailedDesign(ctx),
-      () => this.generateTestingStrategy(ctx),
-      () => this.generateDeploymentOps(ctx),
-      () => this.generateImplementationPlan(ctx),
-      () => this.generateAdrLog(ctx),
-      () => this.generateRisksRegister(ctx),
-      () => this.generateCompliance(ctx),
-      () => this.generateTraceability(ctx),
+    const sectionFns: ReadonlyArray<{ key: string; run: () => Promise<SpecSectionResult> }> = [
+      { key: 'executive-summary', run: () => this.generateExecutiveSummary(ctx) },
+      { key: 'stakeholders', run: () => this.generateStakeholders(ctx) },
+      { key: 'product-requirements', run: () => this.generateProductRequirements(ctx) },
+      { key: 'quality-attributes', run: () => this.generateQualityAttributes(ctx) },
+      { key: 'glossary', run: () => this.generateGlossary(ctx) },
+      { key: 'system-architecture', run: () => this.generateSystemArchitecture(ctx) },
+      { key: 'detailed-design', run: () => this.generateDetailedDesign(ctx) },
+      { key: 'testing-strategy', run: () => this.generateTestingStrategy(ctx) },
+      { key: 'deployment-ops', run: () => this.generateDeploymentOps(ctx) },
+      { key: 'implementation-plan', run: () => this.generateImplementationPlan(ctx) },
+      { key: 'adr-log', run: () => this.generateAdrLog(ctx) },
+      { key: 'risks', run: () => this.generateRisksRegister(ctx) },
+      { key: 'compliance', run: () => this.generateCompliance(ctx) },
+      { key: 'traceability', run: () => this.generateTraceability(ctx) },
     ];
 
+    const cache = options.update === true ? await this.loadSpecCache() : new Map<string, SpecCacheEntry>();
+    const inputsHash = this.hashInputs(config, requirements, integrations);
     const sections: SpecSectionResult[] = [];
-    for (const fn of sectionFns) {
-      sections.push(await fn());
+    for (const { key, run } of sectionFns) {
+      const cached = cache.get(key);
+      if (options.update === true && cached !== undefined && cached.inputsHash === inputsHash) {
+        sections.push({
+          key,
+          title: cached.title,
+          status: cached.status,
+          markdown: cached.markdown,
+        });
+        this.logger.debug('Reused cached section', { key });
+        continue;
+      }
+      const result = await run();
+      sections.push(result);
+      cache.set(key, {
+        inputsHash,
+        title: result.title,
+        status: result.status,
+        markdown: result.markdown,
+      });
     }
+    await this.persistSpecCache(cache);
+
     const visible = sections.filter(
       (s) => s.status !== 'skipped' || options.placeholders === true,
     );
@@ -140,6 +170,30 @@ export class SpecService {
     await this.files.write(outputPath, markdown);
     this.logger.info('Wrote SDD', { outputPath, sections: sections.length });
     return { outputPath, markdown, sections };
+  }
+
+  private hashInputs(
+    config: ProjectConfig,
+    requirements: RequirementsDocument,
+    integrations: readonly Integration[],
+  ): string {
+    return createHash('sha256')
+      .update(JSON.stringify({ config, requirements, integrations }))
+      .digest('hex');
+  }
+
+  private async loadSpecCache(): Promise<Map<string, SpecCacheEntry>> {
+    const filePath = path.join(this.cwd, DEFAULTS.sddDir, 'spec-cache.json');
+    if (!(await this.files.exists(filePath))) {
+      return new Map();
+    }
+    const raw = await this.files.readJson<Record<string, SpecCacheEntry>>(filePath);
+    return new Map(Object.entries(raw));
+  }
+
+  private async persistSpecCache(cache: Map<string, SpecCacheEntry>): Promise<void> {
+    const filePath = path.join(this.cwd, DEFAULTS.sddDir, 'spec-cache.json');
+    await this.files.writeJson(filePath, Object.fromEntries(cache));
   }
 
   public async generateExecutiveSummary(ctx: SectionContext): Promise<SpecSectionResult> {
