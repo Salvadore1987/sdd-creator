@@ -1,0 +1,4 @@
+Produce a markdown body (no top-level heading) for the **Cost Model** subsection. Provide a markdown table breaking down major cost drivers (compute, storage, network, third-party SaaS) with rough monthly estimates and assumptions stated.
+
+Project: {{config.metadata.name}} · stack: {{config.stack}}
+Integrations (potential SaaS cost): {{#each integrations}}{{this.id}} {{this.name}} ({{this.category}}); {{/each}}

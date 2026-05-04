@@ -1,0 +1,9 @@
+Produce a Mermaid `C4Component` diagram for the most critical container of this system. Output ONLY the diagram body (no fences, no commentary).
+
+Project: {{config.metadata.name}} ({{config.architecture}})
+Bounded contexts: {{#each requirements.domain.aggregates}}{{this.name}} ({{this.boundedContext}}) — entities: {{join this.entities ", "}}; {{/each}}
+
+Constraints:
+- First line MUST be `C4Component`.
+- Use `Component`, `ComponentDb`, `Rel` nodes.
+- Up to 10 components; reflect hexagonal/layered/etc. style faithfully.

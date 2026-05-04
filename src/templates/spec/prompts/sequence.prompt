@@ -1,0 +1,11 @@
+Produce a Mermaid `sequenceDiagram` for the following feature. Output ONLY the diagram body (no fences, no commentary).
+
+Feature: {{feature.id}} — {{feature.title}}
+Description: {{feature.description}}
+{{#if feature.usesIntegrations.length}}Uses integrations: {{join feature.usesIntegrations ", "}}{{/if}}
+
+Constraints:
+- First line MUST be `sequenceDiagram`.
+- Show 3–8 messages.
+- Include success path; include one error/alt path if relevant.
+- Use real participant names from the system context (User, the service, integration ID).

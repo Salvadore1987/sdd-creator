@@ -1,0 +1,9 @@
+## 13. Compliance & Security
+
+{{#if requirements.compliance.items.length}}
+{{#each requirements.compliance.items}}
+- {{this}}
+{{/each}}
+{{else}}
+_No compliance requirements captured. Run `sdd brainstorm compliance`._
+{{/if}}

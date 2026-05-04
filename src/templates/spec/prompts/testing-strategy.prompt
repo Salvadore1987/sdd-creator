@@ -1,0 +1,4 @@
+Produce a markdown body for the **Testing Strategy** section. No top-level heading. Cover unit / integration / contract / E2E / performance / security tests, who owns them, when they run (PR / nightly / pre-release), and acceptance gates. Tailor to {{config.stack}}.
+
+Project: {{config.metadata.name}} · architecture: {{config.architecture}}
+Top NFRs: {{#each requirements.quality.nfrs}}{{this.measurableTarget}}; {{/each}}

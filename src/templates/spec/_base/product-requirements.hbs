@@ -1,0 +1,43 @@
+## 3. Product Requirements
+
+{{#if requirements.constraints.items.length}}
+**Constraints**
+
+{{#each requirements.constraints.items}}
+- {{this}}
+{{/each}}
+{{/if}}
+
+{{#if requirements.anti.items.length}}
+**Out of scope**
+
+{{#each requirements.anti.items}}
+- {{this}}
+{{/each}}
+{{/if}}
+
+### 3.1 Functional Requirements
+
+{{#if requirements.features.items.length}}
+{{#each requirements.features.items}}
+#### {{this.id}} — {{this.title}}
+
+- **Priority:** {{this.priority}}
+- **Description:** {{this.description}}
+{{#if this.usesIntegrations.length}}
+- **Uses integrations:** {{join this.usesIntegrations ", "}}
+{{/if}}
+{{#if this.tags.length}}
+- **Tags:** {{join this.tags ", "}}
+{{/if}}
+
+**Acceptance criteria**
+
+{{#each this.acceptanceCriteria}}
+- **{{this.id}}** — _Given_ {{this.given}} _When_ {{this.when}} _Then_ {{this.then}}
+{{/each}}
+
+{{/each}}
+{{else}}
+_No functional requirements captured. Run `sdd brainstorm features`._
+{{/if}}

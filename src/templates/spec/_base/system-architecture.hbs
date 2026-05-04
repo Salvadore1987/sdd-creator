@@ -1,0 +1,31 @@
+## 6. System Architecture
+
+> Architectural style: **{{config.architecture}}** · primary stack: **{{config.stack}}**.
+
+{{#if narrative}}
+{{narrative}}
+{{else}}
+_No architecture narrative generated. Provide one via `sdd brainstorm` or set up Claude provider._
+{{/if}}
+
+### 6.1 C4 Context (L1)
+
+```mermaid
+{{c4ContextDiagram}}
+```
+
+{{#if c4ContainerDiagram}}
+### 6.2 C4 Container (L2)
+
+```mermaid
+{{c4ContainerDiagram}}
+```
+{{/if}}
+
+{{#if c4ComponentDiagram}}
+### 6.3 C4 Component (L3)
+
+```mermaid
+{{c4ComponentDiagram}}
+```
+{{/if}}

@@ -1,0 +1,7 @@
+Produce a markdown narrative for the **Data Model** section. 1–2 paragraphs + a Mermaid `erDiagram` if entities are known. Output ONLY markdown body — no top-level heading.
+
+Project: {{config.metadata.name}} ({{config.stack}})
+Aggregates: {{#each requirements.domain.aggregates}}{{this.name}} ({{this.boundedContext}}) — entities: {{join this.entities ", "}}; {{/each}}
+Database integrations: {{#each databaseIntegrations}}{{this.id}} {{this.name}}; {{/each}}
+
+Cover: storage choice rationale, schema/index strategy, migrations approach, retention.

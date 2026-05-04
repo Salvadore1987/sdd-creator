@@ -1,0 +1,11 @@
+## 8. Testing Strategy
+
+{{#if narrative}}
+{{narrative}}
+{{else}}
+- **Unit:** core domain logic isolated per port.
+- **Integration:** real adapters via tmpdir / Testcontainers; Claude provider always mocked.
+- **Contract tests:** verify port implementations against shared specs.
+- **E2E:** end-to-end CLI invocation with stub Claude provider.
+- **Coverage gates:** domain ≥ 80%, adapters ≥ 60%.
+{{/if}}

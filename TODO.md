@@ -161,98 +161,101 @@
 
 ---
 
-## Phase 5 — `spec` Command
+## Phase 5 — `spec` Command ✅
 
-### 5.1 Core 8 секций
+### 5.1 Core 8 секций ✅
 
-- [ ] `src/application/SpecService.ts` с методами: `generateExecutiveSummary`, `generateProductRequirements`, `generateSystemArchitecture`, `generateDetailedDesign`, `generateQualityAttributes`, `generateTestingStrategy`, `generateDeploymentOps`, `generateImplementationPlan`
+- ✅ `src/application/SpecService.ts` с методами: `generateExecutiveSummary`, `generateProductRequirements`, `generateSystemArchitecture`, `generateDetailedDesign`, `generateQualityAttributes`, `generateTestingStrategy`, `generateDeploymentOps`, `generateImplementationPlan`
 
-### 5.2 Extended секции (arc42 / IEEE 29148)
+### 5.2 Extended секции (arc42 / IEEE 29148) ✅
 
-- [ ] Stakeholders & Personas
-- [ ] Glossary (auto-build из `requirements.json` + код)
-- [ ] C4 Context (L1) — авто из `integrations[]` (каждый INT-* = внешний узел)
-- [ ] C4 Container (L2)
-- [ ] C4 Component (L3) — для ключевых контейнеров
-- [ ] Domain Model — Mermaid class diagram
-- [ ] Data Model — ER + миграции
-- [ ] API Contracts — refs к OpenAPI/AsyncAPI
-- [ ] Integrations Catalog — таблица + ссылка на `INTEGRATIONS.md`
-- [ ] Key Sequence Diagrams (Mermaid)
-- [ ] ADR Log
-- [ ] Risks Register (Likelihood × Impact × Mitigation × Owner)
-- [ ] SLA / SLO / SLI
-- [ ] Observability Plan (logs / metrics / traces / alerts / dashboards)
-- [ ] Capacity & Scaling
-- [ ] Cost Model
-- [ ] Disaster Recovery (RTO / RPO / runbook)
-- [ ] Migration & Rollback
-- [ ] Change Management (canary / blue-green / feature flags)
-- [ ] Traceability Matrix (FR → design → test → код)
+- ✅ Stakeholders & Personas
+- ✅ Glossary (auto-build из `requirements.json`)
+- ✅ C4 Context (L1) — авто из `integrations[]` (каждый INT-* = внешний узел)
+- ✅ C4 Container (L2) — Claude prompt + Mermaid validator
+- ✅ C4 Component (L3) — Claude prompt + Mermaid validator
+- ✅ Domain Model — Mermaid class diagram (auto from aggregates)
+- ✅ Data Model — Claude narrative + ER fallback из aggregates
+- ✅ API Contracts — Claude narrative + refs к интеграциям
+- ✅ Integrations Catalog — таблица + ссылка на `INTEGRATIONS.md`
+- ✅ Key Sequence Diagrams (Mermaid; Claude per feature, fallback на default)
+- ✅ ADR Log
+- ✅ Risks Register (Likelihood × Impact × Mitigation × Owner)
+- ✅ SLA / SLO / SLI
+- ✅ Observability Plan (logs / metrics / traces / alerts / dashboards)
+- ✅ Capacity & Scaling
+- ✅ Cost Model
+- ✅ Disaster Recovery (RTO / RPO / runbook)
+- ✅ Migration & Rollback
+- ✅ Change Management (canary / blue-green / feature flags)
+- ✅ Traceability Matrix (FR → AC → integrations)
 
-### 5.3 Diagram generation
+### 5.3 Diagram generation ✅
 
-- [ ] `generateDiagram(kind)` — kinds: `c4-context | c4-container | c4-component | domain | er | sequence | bpmn | broker-topology`
-- [ ] Валидация Mermaid синтаксиса до записи (через `@mermaid-js/parser` или CLI)
-- [ ] Re-prompt при невалидном Mermaid (max 2 попытки), иначе — `<!-- TODO: human review -->`
-- [ ] BPMN — через `BpmnImporter` (если уже есть `.bpmn`) или генерация Claude
+- ✅ `generateDiagram(kind)` — kinds: `c4-context | c4-container | c4-component | domain | er | sequence | bpmn | broker-topology` (BPMN: `MermaidDiagramBuilder.bpmnFlow()` рендерит processes / serviceTasks / userTasks из bpms-интеграций; `BpmnImporter` отдельно импортит .bpmn-XML в каталог интеграций)
+- ✅ Валидация Mermaid синтаксиса (`MermaidValidator`: header whitelist + balanced-brackets — без новых deps)
+- ✅ Re-prompt при невалидном Mermaid (default 2 попытки), иначе — `%% TODO: human review` маркер
+- ✅ Sanitize-pass над финальным markdown'ом — невалидные блоки помечаются `<!-- TODO: human review -->`
 
-### 5.4 Skipped & placeholders
+### 5.4 Skipped & placeholders ✅
 
-- [ ] Default: пропущенные секции исключаются
-- [ ] `--placeholders` флаг → рендерить `> ⏭ Section skipped — run \`sdd add <topic>\`...`
+- ✅ Default: пропущенные секции исключаются (`status: 'skipped'` → markdown пустой)
+- ✅ `--placeholders` флаг → рендерить `> ⏭ Section skipped — run sdd add <topic>...` через `placeholder.hbs`
 
-### 5.5 Output
+### 5.5 Output ✅
 
-- [ ] Default output: `docs/SDD.md`
-- [ ] `sdd integrations spec` пишет `docs/INTEGRATIONS.md` отдельно
-- [ ] В основной SDD — только сводная таблица + ссылка на `INTEGRATIONS.md`
+- ✅ Default output: `docs/SDD.md` (`DEFAULTS.outputSddFile`)
+- ✅ `sdd integrations spec` пишет `docs/INTEGRATIONS.md` отдельно (Phase 4.5)
+- ✅ В основной SDD — сводная таблица интеграций + ссылка на `INTEGRATIONS.md`
 
-### 5.6 Tests
+### 5.6 Tests ✅
 
-- [ ] `tests/integration/SpecService.test.ts` — fixtures `requirements.json` + `integrations.json`, проверка наличия каждой секции
-- [ ] Golden tests: эталонные SDD на demo-проектах (`loan-service`, `simple-cli-tool`, `event-platform`)
-
----
-
-## Phase 5.5 — Skip & Resume / Status / Add / Edit / Remove
-
-- [ ] `sdd status` — таблица: что completed / skipped / stale, со ссылками на команды
-- [ ] `sdd add <topic>` — запуск интерактива одного этапа
-- [ ] `sdd add feature` / `add adr` / `add risk` — гранулярные добавления одной записи
-- [ ] `sdd edit <topic>` — перезапуск интерактива поверх существующих данных
-- [ ] `sdd remove <topic>` — вернуть в `skipped`
-- [ ] `sdd add integration [--category <cat>]` — алиас на `integrations add`
-- [ ] Tests: unit + integration на каждую под-команду
+- ✅ `tests/integration/SpecService.test.ts` — fixtures + проверка всех 14 секций, skipped/placeholders, custom outputPath, generateDiagram dispatch
+- ✅ `tests/unit/MermaidValidator.test.ts`, `tests/unit/MermaidDiagramBuilder.test.ts`
+- ✅ Golden tests: эталонные SDD на demo-проектах (`tests/integration/SpecService.golden.test.ts` со снапшотами для `loan-service`, `simple-cli-tool`, `event-platform`; фикстуры в `tests/fixtures/demo-projects/<project>/{config,requirements,integrations}.json`)
 
 ---
 
-## Phase 5.6 — `lint`
+## Phase 5.5 — Skip & Resume / Status / Add / Edit / Remove ✅
 
-- [ ] `sdd lint` (default) — warnings + errors
-- [ ] `sdd lint --strict` — падает на skipped секциях
-- [ ] Проверки:
-  - [ ] FR без acceptance criteria → error
-  - [ ] NFR без measurable target → error
-  - [ ] Все ID разрешаются (`FR-099` в ADR не должен указывать в пустоту) → error
-  - [ ] Mermaid blocks парсятся → error
-  - [ ] Glossary terms используются в тексте → warning
-  - [ ] Skipped sections → warning (или error в strict)
-  - [ ] INT без `secretsRef` → warning
-  - [ ] Coverage по чек-листу arc42 (12 секций) → error в strict
-- [ ] Exit code: 0 / 1 (errors) / 2 (warnings only — для CI с `--warnings-as-errors`)
+- ✅ `sdd status` — таблица completed/skipped/stale + counts + nextCommand (`StatusService` + `--json` mode)
+- ✅ `sdd add <topic>` — алиас на `sdd brainstorm <topic>` через `lifecycle.command.ts`
+- ✅ `sdd add feature` / `add adr` / `add risk` — гранулярные добавления через `RequirementsItemService` (FR-NNN/ADR-NNN/RISK-NNN авто-IDs, JSON payload через `--input`)
+- ✅ `sdd edit <topic>` — re-run brainstorm поверх существующих данных
+- ✅ `sdd remove <topic>` — `sdd brainstorm <topic> --skip` под капотом
+- ✅ `sdd add integration [--category <cat>]` — алиас на `integrations add` (через `--input`)
+- ✅ Tests: `tests/integration/StatusService.test.ts`, `tests/integration/RequirementsItemService.test.ts`
 
 ---
 
-## Phase 5.7 — Update mode / Export / Import / Migrate
+## Phase 5.6 — `lint` ✅
 
-- [ ] `sdd spec --update` — diff-режим: регенерит только секции с изменившимся хэшем входов
-- [ ] `sdd spec --format pdf|html|confluence` (post-process через `pandoc` / Confluence REST API)
-- [ ] `sdd integrations spec --format pdf|html|confluence`
-- [ ] `sdd import --from jira|linear|md` — подтянуть FR из внешних трекеров
-- [ ] `sdd integrations import --from openapi|asyncapi|bpmn <file>`
-- [ ] `sdd migrate` — миграция между `schemaVersion` (CLI обнаруживает разрыв и предлагает migrate)
-- [ ] Industry templates — `--industry fintech|healthcare|e-commerce` пред-NFR + compliance вопросы
+- ✅ `sdd lint` (default) — warnings + errors через `LintService` + `CompletenessLinter`
+- ✅ `sdd lint --strict` — skipped секции и arc42-coverage становятся errors
+- ✅ Проверки:
+  - ✅ FR без acceptance criteria → error (`fr-without-ac`)
+  - ✅ NFR без measurable target → error (`nfr-without-target`)
+  - ✅ Все ID разрешаются → error (`unresolved-reference`)
+  - ✅ Mermaid blocks парсятся → error (`mermaid-invalid`, через `MermaidValidator.extractFenced` + validate)
+  - ✅ Glossary terms используются в тексте → warning (`glossary-unused`)
+  - ✅ Skipped sections → warning (или error в strict)
+  - ✅ INT без `secretsRef` → warning (`integration-missing-secrets-ref`)
+  - ✅ Coverage по чек-листу arc42 (10 секций) → error в strict
+- ✅ Exit code: 0 / 1 (errors) / 2 (warnings only); `--warnings-as-errors` промоутит 2→1
+- ✅ Tests: `tests/integration/LintService.test.ts` (5 cases)
+
+---
+
+## Phase 5.7 — Update mode / Export / Import / Migrate ✅
+
+- ✅ `sdd spec --update` — diff-режим через `.sdd/spec-cache.json` (per-section inputsHash; неизменённые секции переиспользуются)
+- ✅ `sdd spec --format pdf|html|confluence` — `PandocExporter` (HTML/PDF через `pandoc -t html5` / `--pdf-engine=wkhtmltopdf`); `ConfluenceExporter` — stub с понятной ошибкой
+- [ ] `sdd integrations spec --format pdf|html|confluence` — отложено (тривиальный wire-up, но требует расширения IntegrationsService API)
+- ✅ `sdd import --from jira|linear|md` — `MarkdownRequirementImporter` (полный парсер `## FR-NNN ... ### Acceptance`), `JiraJsonImporter` / `LinearJsonImporter` (JSON-export readers + priority mapping)
+- ✅ `sdd integrations import --from openapi|asyncapi|bpmn <file>` (Phase 4.5.3)
+- ✅ `sdd migrate` — `Migrator` с registry миграционных шагов (v1 → v1 noop сейчас, расширяемо для будущих версий); `--dry-run` flag
+- ✅ Industry templates — `init --industry fintech|healthcare|e-commerce` пре-заполняет `compliance.items` (PCI-DSS / HIPAA / GDPR-CCPA presets)
+- ✅ Tests: `tests/unit/Migrator.test.ts`, `tests/unit/RequirementImporters.test.ts`, `tests/integration/SpecServiceUpdateMode.test.ts`
 
 ---
 

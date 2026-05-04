@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "integrations": [
+    {
+      "id": "INT-001",
+      "category": "message-broker",
+      "name": "Kafka",
+      "purpose": "Order event bus",
+      "endpoints": [{ "name": "broker", "protocol": "kafka", "url": "kafka://broker:9092" }],
+      "auth": { "mode": "sasl", "secretsRef": "vault://kafka/sasl" },
+      "extra": { "flavor": "kafka", "topics": ["orders.placed", "orders.cancelled"], "delivery": "at-least-once" }
+    }
+  ]
+}

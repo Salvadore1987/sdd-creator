@@ -41,6 +41,8 @@ const initInputSchema = z.object({
   claudeModel: z.string().optional(),
 });
 
+export type Industry = 'fintech' | 'healthcare' | 'e-commerce';
+
 export interface InitCommandOptions {
   readonly cwd?: string;
   readonly nonInteractive?: boolean;
@@ -48,7 +50,14 @@ export interface InitCommandOptions {
   readonly force?: boolean;
   readonly merge?: boolean;
   readonly providerOverride?: ClaudeProviderKind;
+  readonly industry?: Industry;
 }
+
+const INDUSTRY_COMPLIANCE: Record<Industry, readonly string[]> = {
+  fintech: ['PCI-DSS for cardholder data', 'AML/KYC controls', 'GDPR if EU users'],
+  healthcare: ['HIPAA Privacy + Security Rules', 'Audit logs for PHI access', 'Data minimisation'],
+  'e-commerce': ['PCI-DSS scope segmentation', 'GDPR / CCPA consent management', 'Right-to-be-forgotten flows'],
+};
 
 export interface InitCommandDeps {
   readonly files?: IFileRepository;
@@ -95,6 +104,10 @@ export async function runInit(
 
   try {
     const result = await service.execute(finalInput, idempotency);
+    if (options.industry !== undefined) {
+      await applyIndustryPreset(files, cwd, options.industry);
+      console.log(`Pre-filled compliance scaffolding for industry "${options.industry}"`);
+    }
     printSummary(result);
     return result;
   } catch (error) {
@@ -104,6 +117,32 @@ export async function runInit(
     }
     throw error;
   }
+}
+
+async function applyIndustryPreset(
+  files: IFileRepository,
+  cwd: string,
+  industry: Industry,
+): Promise<void> {
+  const requirementsPath = path.join(cwd, '.sdd', 'requirements.json');
+  if (!(await files.exists(requirementsPath))) {
+    return;
+  }
+  const doc = await files.readJson<{
+    compliance?: { state?: { status?: string }; items?: readonly string[] };
+    [key: string]: unknown;
+  }>(requirementsPath);
+  const presets = INDUSTRY_COMPLIANCE[industry];
+  const existing = doc.compliance?.items ?? [];
+  const merged = Array.from(new Set([...existing, ...presets]));
+  const updated = {
+    ...doc,
+    compliance: {
+      state: { status: 'completed', updatedAt: new Date().toISOString() },
+      items: merged,
+    },
+  };
+  await files.writeJson(requirementsPath, updated);
 }
 
 async function resolveInput(
@@ -212,14 +251,30 @@ export function buildInitCommand(): Command {
     .option('--config <path>', 'Path to a JSON file with init answers')
     .option('--force', 'Overwrite an existing .sdd/ directory')
     .option('--merge', 'Keep existing files in .sdd/ and only write missing ones')
-    .action(async (opts: { nonInteractive?: boolean; config?: string; force?: boolean; merge?: boolean; provider?: ClaudeProviderKind }) => {
-      await runInit({
-        ...(opts.nonInteractive !== undefined ? { nonInteractive: opts.nonInteractive } : {}),
-        ...(opts.config !== undefined ? { configPath: opts.config } : {}),
-        ...(opts.force !== undefined ? { force: opts.force } : {}),
-        ...(opts.merge !== undefined ? { merge: opts.merge } : {}),
-        ...(opts.provider !== undefined ? { providerOverride: opts.provider } : {}),
-      });
-    });
+    .option(
+      '--industry <kind>',
+      'Pre-fill compliance / NFR scaffolding for a sector: fintech | healthcare | e-commerce',
+    )
+    .action(
+      async (opts: {
+        nonInteractive?: boolean;
+        config?: string;
+        force?: boolean;
+        merge?: boolean;
+        provider?: ClaudeProviderKind;
+        industry?: string;
+      }) => {
+        await runInit({
+          ...(opts.nonInteractive !== undefined ? { nonInteractive: opts.nonInteractive } : {}),
+          ...(opts.config !== undefined ? { configPath: opts.config } : {}),
+          ...(opts.force !== undefined ? { force: opts.force } : {}),
+          ...(opts.merge !== undefined ? { merge: opts.merge } : {}),
+          ...(opts.provider !== undefined ? { providerOverride: opts.provider } : {}),
+          ...(opts.industry !== undefined
+            ? { industry: opts.industry as 'fintech' | 'healthcare' | 'e-commerce' }
+            : {}),
+        });
+      },
+    );
   return cmd;
 }

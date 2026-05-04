@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "stakeholders": { "state": { "status": "skipped", "skippedAt": "2026-05-04T00:00:00.000Z" }, "items": [] },
+  "context": {
+    "state": { "status": "completed", "updatedAt": "2026-05-04T00:00:00.000Z" },
+    "statement": "A CLI to convert between data formats",
+    "goals": ["Replace ad-hoc shell scripts"],
+    "kpis": ["1k weekly downloads"]
+  },
+  "constraints": { "state": { "status": "completed" }, "items": ["Node 20+"] },
+  "glossary": { "state": { "status": "skipped", "skippedAt": "2026-05-04T00:00:00.000Z" }, "terms": [] },
+  "features": {
+    "state": { "status": "completed" },
+    "items": [
+      {
+        "id": "FR-001",
+        "title": "Convert JSON to YAML",
+        "description": "Read a JSON file and emit YAML on stdout",
+        "priority": "must",
+        "acceptanceCriteria": [
+          { "id": "AC-FR-001-1", "given": "a valid JSON file", "when": "the CLI is invoked with --input", "then": "YAML is written to stdout" }
+        ]
+      }
+    ]
+  },
+  "domain": { "state": { "status": "skipped", "skippedAt": "2026-05-04T00:00:00.000Z" }, "aggregates": [] },
+  "quality": {
+    "state": { "status": "completed" },
+    "nfrs": [{ "id": "NFR-001", "category": "performance", "statement": "Conversion is fast", "measurableTarget": "<100ms for 10MB inputs" }]
+  },
+  "dependencies": { "state": { "status": "completed" }, "integrationRefs": [] },
+  "anti": { "state": { "status": "completed" }, "items": ["No GUI"] },
+  "compliance": { "state": { "status": "skipped", "skippedAt": "2026-05-04T00:00:00.000Z" }, "items": [] },
+  "adrs": [],
+  "risks": []
+}

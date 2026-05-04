@@ -1,0 +1,6 @@
+Produce a markdown body (no top-level heading) for the **SLA / SLO / SLI** subsection. Provide a small markdown table with at least 3 SLOs derived from the NFRs below. Each row: SLI · target · window · error budget · alerting.
+
+NFRs:
+{{#each requirements.quality.nfrs}}
+- {{this.id}} {{this.category}}: {{this.statement}} → {{this.measurableTarget}}
+{{/each}}

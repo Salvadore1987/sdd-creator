@@ -3,7 +3,7 @@
 > Spec-anchored development driver, powered by Claude.
 > CLI, который превращает разговор о фиче в полноценный **Software Design Document** по arc42 / IEEE 29148 — с диаграммами, ADR, traceability и каталогом интеграций.
 
-> ⚠️ **Статус:** Phase 4.5 завершена. Готовы каркас проекта, доменное ядро, ports/adapters, команды `sdd init`, `sdd brainstorm <topic>` (10 этапов), `sdd integrations <list|show|add|edit|remove|validate|import|spec>` (13 категорий + OpenAPI/AsyncAPI/BPMN импортёры). Команды `spec`, `lint` ещё не реализованы.
+> ⚠️ **Статус:** Phase 5 завершена полностью (5.1–5.7). Готовы: `sdd init` (+ `--industry fintech|healthcare|e-commerce`), `sdd brainstorm <topic>` (10 этапов), `sdd integrations <list|show|add|edit|remove|validate|import|spec>` (13 категорий + OpenAPI/AsyncAPI/BPMN импортёры), `sdd spec` (14 секций arc42/IEEE 29148, авто-Mermaid + валидация, `--update` diff-mode + `--format html|pdf|confluence` через pandoc), `sdd status`, `sdd add|edit|remove <topic>`, `sdd add feature|adr|risk|integration`, `sdd lint` (+`--strict`, `--warnings-as-errors`, exit codes 0/1/2), `sdd import --from md|jira|linear`, `sdd migrate`. Осталось Phase 6 (расширенное тестовое покрытие), Phase 7 (CLI polish: error classes / exit codes / verbose), Phase 8 (build & npm publish).
 
 ---
 
@@ -266,22 +266,42 @@ YAML-варианты OpenAPI/AsyncAPI пока требуют ручной ко
 
 ```bash
 $ sdd spec
-✔ Loaded config + requirements + integrations
-✔ Generated Executive Summary
-✔ Generated Stakeholders & Personas
-✔ Generated Glossary (skipped — placeholder)
-✔ Generated C4 Context diagram (Mermaid)
-✔ Generated C4 Container diagram
-✔ Generated Domain Model (Mermaid class)
-✔ Generated Risks Register (3 risks)
-✔ Generated Traceability Matrix (FR → design → test → code)
-✔ Wrote docs/SDD.md (47 KB)
+✔ Wrote /work/loan-service/docs/SDD.md
+  ✓ Executive Summary
+  ✓ Stakeholders & Personas
+  ✓ Product Requirements
+  ✓ Quality Attributes
+  ✓ Glossary
+  ✓ System Architecture
+  ✓ Detailed Design
+  ✓ Testing Strategy
+  ✓ Deployment & Operations
+  ✓ Implementation Plan
+  ✓ Architecture Decision Records
+  ✓ Risks Register
+  ✓ Compliance & Security
+  ✓ Traceability
 
 $ sdd integrations spec
-✔ Wrote docs/INTEGRATIONS.md (12 KB)
-   • INT-001 Camunda — BPMN diagram + saga flow
+✔ Wrote docs/INTEGRATIONS.md
+   • INT-001 Camunda — BPMN diagram + extras
    • INT-002 RabbitMQ — topology diagram
 ```
+
+**Доступные опции `sdd spec`:**
+
+| Опция                  | Что делает                                                                 |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `-o, --output <file>`  | Кастомный путь вывода (по-умолчанию `docs/SDD.md`)                         |
+| `--placeholders`       | Skipped секции вставляются как плейсхолдеры с `> ⏭ Section skipped`        |
+| `--update`             | Регенерация только секций с изменившимся хэшем входов (зарезервировано)    |
+
+**Что включено в SDD.md:**
+- 14 секций (arc42 / IEEE 29148): Executive Summary → Traceability.
+- Авто-генерация Mermaid: `C4Context` (по `integrations[]`), `classDiagram` (по `domain.aggregates`), `erDiagram` (по entities), `flowchart` topology брокеров.
+- Claude генерит: narrative для Architecture / Detailed Design / Testing / Deployment-Ops / Implementation Plan, плюс `C4Container`, `C4Component`, `sequenceDiagram` per-feature.
+- Mermaid-валидатор (`MermaidValidator`) проверяет header + balanced brackets; невалидные блоки помечаются `<!-- TODO: human review -->`. Re-prompt — до 2 попыток.
+- Skipped секции: либо опускаются (default), либо рендерятся как плейсхолдеры (`--placeholders`).
 
 В итоге:
 

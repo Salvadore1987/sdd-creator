@@ -1,0 +1,3 @@
+Produce a markdown body (no top-level heading) for **Change Management**. Cover release cadence, canary/blue-green/feature-flag policy, approval workflow, communication channels.
+
+Project: {{config.metadata.name}}

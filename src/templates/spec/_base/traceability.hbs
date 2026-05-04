@@ -1,0 +1,11 @@
+## 14. Traceability Matrix
+
+{{#if traceability.length}}
+| Feature | Title | Acceptance Criteria | Integrations |
+| --- | --- | --- | --- |
+{{#each traceability}}
+| {{this.featureId}} | {{this.title}} | {{join this.acIds ", "}} | {{#if this.integrations.length}}{{join this.integrations ", "}}{{else}}—{{/if}} |
+{{/each}}
+{{else}}
+_No traceable items captured yet._
+{{/if}}

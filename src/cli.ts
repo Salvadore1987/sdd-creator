@@ -4,8 +4,18 @@
 import { Command, Option } from 'commander';
 
 import { buildBrainstormCommand } from './commands/brainstorm.command';
+import { buildImportCommand } from './commands/import.command';
 import { buildInitCommand } from './commands/init.command';
 import { buildIntegrationsCommand } from './commands/integrations.command';
+import {
+  buildAddCommand,
+  buildEditCommand,
+  buildRemoveCommand,
+} from './commands/lifecycle.command';
+import { buildLintCommand } from './commands/lint.command';
+import { buildMigrateCommand } from './commands/migrate.command';
+import { buildSpecCommand } from './commands/spec.command';
+import { buildStatusCommand } from './commands/status.command';
 
 const program = new Command();
 
@@ -19,6 +29,14 @@ program
 program.addCommand(buildInitCommand());
 program.addCommand(buildBrainstormCommand());
 program.addCommand(buildIntegrationsCommand());
+program.addCommand(buildSpecCommand());
+program.addCommand(buildStatusCommand());
+program.addCommand(buildAddCommand());
+program.addCommand(buildEditCommand());
+program.addCommand(buildRemoveCommand());
+program.addCommand(buildLintCommand());
+program.addCommand(buildImportCommand());
+program.addCommand(buildMigrateCommand());
 
 program.parseAsync(process.argv).catch((error: unknown) => {
   console.error(error);

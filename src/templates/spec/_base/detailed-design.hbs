@@ -1,0 +1,75 @@
+## 7. Detailed Design
+
+### 7.1 Domain Model
+
+{{#if requirements.domain.aggregates.length}}
+{{#each requirements.domain.aggregates}}
+- **{{this.name}}** _(context: {{this.boundedContext}})_ — {{this.description}}
+  - Entities: {{join this.entities ", "}}
+  - Value objects: {{join this.valueObjects ", "}}
+  - Events: {{join this.events ", "}}
+{{/each}}
+
+```mermaid
+{{domainDiagram}}
+```
+{{else}}
+_No bounded contexts captured. Run `sdd brainstorm domain`._
+{{/if}}
+
+### 7.2 Data Model
+
+{{#if dataModelNarrative}}
+{{dataModelNarrative}}
+{{else}}
+_To be defined — annotate aggregates with persistence concerns or run `sdd add data-model`._
+{{/if}}
+
+### 7.3 API Contracts
+
+{{#if apiContractsNarrative}}
+{{apiContractsNarrative}}
+{{else}}
+{{#if hasOpenApi}}
+- See OpenAPI specs imported via `sdd integrations import --from openapi`.
+{{else}}
+_No API contracts referenced. Import OpenAPI/AsyncAPI specs via `sdd integrations import`._
+{{/if}}
+{{/if}}
+
+### 7.4 Integrations Catalog
+
+{{#if integrations.length}}
+| ID | Category | Name | Purpose |
+| --- | --- | --- | --- |
+{{#each integrations}}
+| {{this.id}} | {{this.category}} | {{this.name}} | {{this.purpose}} |
+{{/each}}
+
+> Full catalog: see [`INTEGRATIONS.md`](./INTEGRATIONS.md).
+{{else}}
+_No integrations registered. Use `sdd integrations add`._
+{{/if}}
+
+{{#if bpmnDiagram}}
+### 7.5 Workflow (BPMN)
+
+```mermaid
+{{bpmnDiagram}}
+```
+{{/if}}
+
+### 7.6 Key Sequence Diagrams
+
+{{#if sequenceDiagrams.length}}
+{{#each sequenceDiagrams}}
+#### {{this.title}}
+
+```mermaid
+{{this.diagram}}
+```
+
+{{/each}}
+{{else}}
+_No key sequence diagrams generated._
+{{/if}}

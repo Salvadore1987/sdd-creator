@@ -1,0 +1,4 @@
+Produce a markdown body (no top-level heading) for **Migration & Rollback**. Cover schema migrations, expand-contract pattern, feature flags, and an explicit rollback plan with stop conditions.
+
+Project: {{config.metadata.name}} · stack: {{config.stack}}
+Database integrations: {{#each databaseIntegrations}}{{this.id}} {{this.name}}; {{/each}}
