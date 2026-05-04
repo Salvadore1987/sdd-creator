@@ -3,6 +3,7 @@ import { Command } from 'commander';
 
 import { FileRepository } from '../adapters/FileRepository';
 import { LintService, type LintReport } from '../application/LintService';
+import { LintFailedError } from '../cli/errors';
 import type { IFileRepository } from '../ports/IFileRepository';
 
 export interface LintCommandOptions {
@@ -59,7 +60,9 @@ export function buildLintCommand(): Command {
         ...(opts.warningsAsErrors !== undefined ? { warningsAsErrors: opts.warningsAsErrors } : {}),
         ...(opts.spec !== undefined ? { sddPath: opts.spec } : {}),
       });
-      process.exit(result.exitCode);
+      if (result.exitCode !== 0) {
+        throw new LintFailedError(result.report.errorCount, result.report.warningCount);
+      }
     });
   return cmd;
 }
