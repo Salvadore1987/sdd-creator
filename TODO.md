@@ -259,14 +259,15 @@
 
 ---
 
-## Phase 6 — Testing & Quality
+## Phase 6 — Testing & Quality ✅
 
-- [ ] Unit (`tests/unit/`) — domain ≥ 80%, adapters ≥ 60%
-- [ ] Integration (`tests/integration/`) — `IFileRepository` живой через tmpdir, `IClaudeProvider` всегда мокается
-- [ ] E2E (`tests/e2e/full-workflow.test.ts`) — `init → brainstorm features → integrations add → spec → lint`, через мок-провайдер
-- [ ] Golden files для template output (snapshot тесты)
-- [ ] Contract tests для портов
-- [ ] CI: lint + type-check + tests + coverage gate
+- ✅ Unit (`tests/unit/`) — domain 93.5% / adapters 81.8% / application 90.1% / utils 100% (gates подняты до 90/75/85/95 соответственно)
+- ✅ Integration (`tests/integration/`) — `IFileRepository` живой через tmpdir во всех сервисных тестах; `IClaudeProvider` мокается через `StubClaudeProvider` (`SpecService.test.ts`, `BrainstormService.test.ts`, `IntegrationsFlow.test.ts`, etc.)
+- ✅ E2E `tests/e2e/full-workflow.test.ts` — `init → integrations add → brainstorm features → spec → lint` end-to-end через мок-провайдер; +smoke `tests/e2e/init.test.ts` (Phase 3)
+- ✅ Golden snapshot тесты — `tests/integration/SpecService.golden.test.ts` для `loan-service` / `simple-cli-tool` / `event-platform` (3 снапшота заморожены в `__snapshots__/`)
+- ✅ Contract tests для портов — `tests/unit/contracts/{IFileRepository,IClaudeProvider,ITemplateEngine,ILogger}.contract.test.ts` (38 тестов; FS-impl + in-memory; Winston + capturing logger)
+- ✅ Дополнительные unit-тесты: `RequirementValidator` (60%→100%), `utils/{config,uuid,validators}` (→100%), `ports/errors` (→88%), `exporters/{Pandoc,Confluence}` (→81% adapters)
+- ✅ CI: lint + type-check + tests + coverage gate (jest.config.js: domain≥90, adapters≥75, application≥85, utils≥95)
 
 ---
 

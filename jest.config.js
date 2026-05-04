@@ -15,16 +15,28 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html'],
   coverageThreshold: {
     './src/domain/': {
-      lines: 80,
-      statements: 75,
+      lines: 90,
+      statements: 88,
       branches: 70,
-      functions: 65,
+      functions: 80,
     },
     './src/adapters/': {
-      lines: 60,
-      statements: 60,
-      branches: 50,
-      functions: 60,
+      lines: 75,
+      statements: 75,
+      branches: 60,
+      functions: 75,
+    },
+    './src/application/': {
+      lines: 85,
+      statements: 85,
+      branches: 65,
+      functions: 90,
+    },
+    './src/utils/': {
+      lines: 95,
+      statements: 95,
+      branches: 95,
+      functions: 95,
     },
   },
   projects: [
