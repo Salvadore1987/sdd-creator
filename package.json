@@ -13,6 +13,14 @@
   ],
   "license": "MIT",
   "author": "Eldar Sagitov <salvadore1987@gmail.com>",
+  "homepage": "https://github.com/Salvadore1987/sdd-creator#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Salvadore1987/sdd-creator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Salvadore1987/sdd-creator/issues"
+  },
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -23,7 +31,8 @@
   "files": [
     "dist/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=20.0.0"

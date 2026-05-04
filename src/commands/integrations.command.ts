@@ -2,6 +2,8 @@ import * as path from 'path';
 
 import { Command } from 'commander';
 
+import { ConfluenceExporter } from '../adapters/exporters/ConfluenceExporter';
+import { PandocExporter } from '../adapters/exporters/PandocExporter';
 import { FileRepository } from '../adapters/FileRepository';
 import { HandlebarsTemplateEngine } from '../adapters/HandlebarsTemplateEngine';
 import { AsyncApiImporter } from '../adapters/importers/AsyncApiImporter';
@@ -14,6 +16,7 @@ import type { Integration, IntegrationCategory } from '../domain/models';
 import type { IFileRepository } from '../ports/IFileRepository';
 import type { IIntegrationImporter, ImportFormat } from '../ports/IIntegrationImporter';
 import type { ILogger } from '../ports/ILogger';
+import type { ExportFormat, ISpecExporter } from '../ports/ISpecExporter';
 import type { ITemplateEngine } from '../ports/ITemplateEngine';
 
 const FORMATS: readonly ImportFormat[] = ['openapi', 'asyncapi', 'bpmn'];
@@ -172,15 +175,47 @@ export async function importIntegrations(
 
 export interface SpecIntegrationsOptions extends CommonOptions {
   readonly outputPath?: string;
+  readonly format?: ExportFormat;
+  readonly exportPath?: string;
+}
+
+function pickExporter(format: ExportFormat): ISpecExporter {
+  switch (format) {
+    case 'html':
+    case 'pdf':
+      return new PandocExporter(format);
+    case 'confluence':
+      return new ConfluenceExporter();
+  }
+}
+
+function deriveExportPath(mdPath: string, format: ExportFormat): string {
+  const base = mdPath.replace(/\.md$/i, '');
+  switch (format) {
+    case 'html':
+      return `${base}.html`;
+    case 'pdf':
+      return `${base}.pdf`;
+    case 'confluence':
+      return `${base}.confluence`;
+  }
 }
 
 export async function generateIntegrationsSpec(
   options: SpecIntegrationsOptions = {},
   deps: IntegrationsCommandDeps = {},
-): Promise<{ outputPath: string }> {
+): Promise<{ outputPath: string; exportPath?: string }> {
   const service = buildService(options, deps);
   const result = await service.generateSpec(options.outputPath);
   console.log(`Wrote ${result.outputPath}`);
+
+  if (options.format !== undefined) {
+    const exporter = pickExporter(options.format);
+    const exportPath = options.exportPath ?? deriveExportPath(result.outputPath, options.format);
+    await exporter.export({ markdown: result.markdown, outputPath: exportPath });
+    console.log(`✔ Exported ${options.format.toUpperCase()} → ${exportPath}`);
+    return { outputPath: result.outputPath, exportPath };
+  }
   return { outputPath: result.outputPath };
 }
 
@@ -257,11 +292,17 @@ export function buildIntegrationsCommand(): Command {
     .command('spec')
     .description('Render INTEGRATIONS.md')
     .option('-o, --output <path>', 'Output file path (default: docs/INTEGRATIONS.md)')
-    .action(async (opts: { output?: string }) => {
-      await generateIntegrationsSpec({
-        ...(opts.output !== undefined ? { outputPath: opts.output } : {}),
-      });
-    });
+    .option('--format <kind>', 'Post-process to additional format: html | pdf | confluence')
+    .option('--export-path <file>', 'Custom output path for the exported format')
+    .action(
+      async (opts: { output?: string; format?: string; exportPath?: string }) => {
+        await generateIntegrationsSpec({
+          ...(opts.output !== undefined ? { outputPath: opts.output } : {}),
+          ...(opts.format !== undefined ? { format: opts.format as ExportFormat } : {}),
+          ...(opts.exportPath !== undefined ? { exportPath: opts.exportPath } : {}),
+        });
+      },
+    );
 
   return cmd;
 }

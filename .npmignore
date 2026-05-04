@@ -4,6 +4,7 @@ coverage/
 .sdd/
 .github/
 scripts/
+docs/
 *.log
 *.tsbuildinfo
 .eslintrc.json
@@ -14,6 +15,10 @@ jest.config.js
 TODO.md
 SDD_CREATOR.md
 CLAUDE.md
+CONTRIBUTING.md
 .gitignore
 .env
 .env.*
+*.tgz
+.idea/
+.vscode/
